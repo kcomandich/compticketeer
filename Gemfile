@@ -11,3 +11,4 @@ gem 'json', '1.5.1'
 gem 'factory_girl', '1.3.3', :require => false, :groups => ['development', 'test']
 gem 'rspec-rails',  '1.3.3', :require => false, :groups => ['development', 'test']
 gem 'ruby-debug', :groups => ['development', 'test'], :platforms => :ruby
+gem 'rdoc'
