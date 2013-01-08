@@ -1,6 +1,6 @@
 source :rubygems
 
-gem 'rails', '2.3.10'
+gem 'rails', '2.3.15'
 gem 'sqlite3-ruby', :require => 'sqlite3'
 
 gem 'aasm', '2.2.0'
