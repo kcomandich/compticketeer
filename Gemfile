@@ -1,7 +1,7 @@
 source :rubygems
 
 gem 'rails', '2.3.15'
-gem 'sqlite3', '1.3.6'
+gem 'sqlite3', '1.3.3'
 
 gem 'aasm', '2.2.0'
 gem 'authlogic', '2.1.6'
