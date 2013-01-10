@@ -12,5 +12,7 @@ gem 'factory_girl', '1.3.3', :require => false, :groups => ['development', 'test
 gem 'rspec-rails',  '1.3.3', :require => false, :groups => ['development', 'test']
 gem 'ruby-debug', :groups => ['development', 'test'], :platforms => :ruby
 gem 'rdoc'
-gem 'capistrano'
-gem 'capistrano_colors'
+
+group :development do
+  gem 'capistrano', :require => false
+end
