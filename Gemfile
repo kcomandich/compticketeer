@@ -1,6 +1,6 @@
 source :rubygems
 
-gem 'rails', '2.3.15'
+gem 'rails', '2.3.16'
 gem 'sqlite3', '1.3.3'
 
 gem 'aasm', '2.2.0'
