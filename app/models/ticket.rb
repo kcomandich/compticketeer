@@ -124,7 +124,7 @@ class Ticket < ActiveRecord::Base
       end
 
       # TODO refactor this to shorten the code, eliminate redundancy, etc
-      res = Net::HTTP.post_form(URI.parse('http://www.eventbrite.com/json/discount_new'), query)
+      res = eventbrite_request('discount_new', query)
       case res
       when Net::HTTPOK
         begin
@@ -178,4 +178,9 @@ class Ticket < ActiveRecord::Base
   def fill_email_template
     return self.ticket_kind.template.gsub(/%CODE%/i, self.discount_code)
   end
+
+  def eventbrite_request(request, query)
+    return Net::HTTP.post_form(URI.parse("http://www.eventbrite.com/json/#{request}"), query)
+  end
+
 end
