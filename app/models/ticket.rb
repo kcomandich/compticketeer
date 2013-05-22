@@ -107,56 +107,56 @@ class Ticket < ActiveRecord::Base
     if self.class.disable_register_code
       self.registered_code!
       return false
-    else
-      if SECRETS.eventbrite_data['app_key'] == 'test'
-        self.update_attribute :report, "Couldn't register EventBrite code because no API key was defined in 'config/secrets.yml'"
-        self.failed_to_register_code!
-        return false
-      end
+    end
 
-      query = {
-        'code' => self.discount_code,
-        'percent_off' => '100',
-        'quantity_available' => '1',
-      }
-      for key in %w[app_key user_key event_id tickets]
-        query[key] = SECRETS.eventbrite_data[key]
-      end
+    if SECRETS.eventbrite_data['app_key'] == 'test'
+      self.update_attribute :report, "Couldn't register EventBrite code because no API key was defined in 'config/secrets.yml'"
+      self.failed_to_register_code!
+      return false
+    end
 
-      # TODO refactor this to shorten the code, eliminate redundancy, etc
-      res = eventbrite_request('discount_new', query)
-      case res
-      when Net::HTTPOK
-        begin
-          answer = JSON.parse(res.body)
-          if answer['error']
-            if answer['error'].try(:[], 'error_message').to_s =~ /already in use/
-              # Ticket exists succeeded
-              self.update_attribute :report, "EventBrite code already exists: #{res.body}"
-              self.registered_code!
-              return true
-            else
-              # Has error of some other kind
-              self.update_attribute :report, "Could not register EventBrite code: #{res.body}"
-              self.failed_to_register_code!
-              return false
-            end
-          else
-            # Registration succeeded
-            self.update_attribute :report, "Registered EventBrite code: #{res.body}"
+    query = {
+      'code' => self.discount_code,
+      'percent_off' => '100',
+      'quantity_available' => '1',
+    }
+    for key in %w[app_key user_key event_id tickets]
+      query[key] = SECRETS.eventbrite_data[key]
+    end
+
+    # TODO refactor this to shorten the code, eliminate redundancy, etc
+    res = eventbrite_request('discount_new', query)
+    case res
+    when Net::HTTPOK
+      begin
+        answer = JSON.parse(res.body)
+        if answer['error']
+          if answer['error'].try(:[], 'error_message').to_s =~ /already in use/
+            # Ticket exists succeeded
+            self.update_attribute :report, "EventBrite code already exists: #{res.body}"
             self.registered_code!
             return true
+          else
+            # Has error of some other kind
+            self.update_attribute :report, "Could not register EventBrite code: #{res.body}"
+            self.failed_to_register_code!
+            return false
           end
-        rescue JSON::ParserError => e
-          self.update_attribute :report, "Could not parse EventBrite JSON response: #{res.body}"
-          self.failed_to_register_code!
-          return false
+        else
+          # Registration succeeded
+          self.update_attribute :report, "Registered EventBrite code: #{res.body}"
+          self.registered_code!
+          return true
         end
-      else
-        self.update_attribute :report, "Could not register EventBrite code, got HTTP status #{res.code}: #{res.body}"
+      rescue JSON::ParserError => e
+        self.update_attribute :report, "Could not parse EventBrite JSON response: #{res.body}"
         self.failed_to_register_code!
         return false
       end
+    else
+      self.update_attribute :report, "Could not register EventBrite code, got HTTP status #{res.code}: #{res.body}"
+      self.failed_to_register_code!
+      return false
     end
   end
 
