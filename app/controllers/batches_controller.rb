@@ -34,6 +34,9 @@ class BatchesController < ApplicationController
   # GET /batches/new.xml
   def new
     @batch = Batch.new
+    event = Event.new
+    event.get_event
+    @eventname = event.data ? event.data['title'] : event.report
 
     respond_to do |format|
       format.html # new.html.erb
