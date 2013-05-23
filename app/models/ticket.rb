@@ -101,7 +101,7 @@ class Ticket < ActiveRecord::Base
     return self.status
   end
 
-  # Register the discount code with EventBrite.
+  # Register the discount code with Eventbrite.
   def register_code
     self.registering_code!
     if self.class.disable_register_code
@@ -110,7 +110,7 @@ class Ticket < ActiveRecord::Base
     end
 
     if SECRETS.eventbrite_data['app_key'] == 'test'
-      self.update_attribute :report, "Couldn't register EventBrite code because no API key was defined in 'config/secrets.yml'"
+      self.update_attribute :report, "Couldn't register Eventbrite code because no API key was defined in 'config/secrets.yml'"
       self.failed_to_register_code!
       return false
     end
@@ -137,14 +137,14 @@ class Ticket < ActiveRecord::Base
     if answer['error']
       if answer['error'].try(:[], 'error_message').to_s =~ /already in use/
         # Ticket exists succeeded
-        return true, "EventBrite code already exists: #{res.body}"
+        return true, "Eventbrite code already exists: #{res.body}"
       else
         # Has error of some other kind
-        return false, "Could not register EventBrite code: #{res.body}"
+        return false, "Could not register Eventbrite code: #{res.body}"
       end
     else
       # Registration succeeded
-      return true, "Registered EventBrite code: #{res.body}"
+      return true, "Registered Eventbrite code: #{res.body}"
     end
   end
 
@@ -175,7 +175,7 @@ class Ticket < ActiveRecord::Base
       begin
         return parser.call(res)
       rescue JSON::ParserError => e
-        return false, "Could not parse EventBrite JSON response: #{res.body}"
+        return false, "Could not parse Eventbrite JSON response: #{res.body}"
       end
     else
       return false, "Eventbrite request failed, got HTTP status #{res.code}: #{res.body}"
