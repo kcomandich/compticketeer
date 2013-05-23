@@ -1,4 +1,6 @@
 class TicketKindsController < ApplicationController
+  before_filter :assign_event, :only => [:new, :edit, :show]
+
   # GET /ticket_kinds
   # GET /ticket_kinds.xml
   def index
@@ -14,6 +16,7 @@ class TicketKindsController < ApplicationController
   # GET /ticket_kinds/1.xml
   def show
     @ticket_kind = TicketKind.find(params[:id])
+    @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
 
     respond_to do |format|
       format.html # show.html.erb
@@ -25,6 +28,7 @@ class TicketKindsController < ApplicationController
   # GET /ticket_kinds/new.xml
   def new
     @ticket_kind = TicketKind.new
+    @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
 
     respond_to do |format|
       format.html # new.html.erb
@@ -35,6 +39,7 @@ class TicketKindsController < ApplicationController
   # GET /ticket_kinds/1/edit
   def edit
     @ticket_kind = TicketKind.find(params[:id])
+    @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
   end
 
   # POST /ticket_kinds
@@ -81,5 +86,13 @@ class TicketKindsController < ApplicationController
       format.html { redirect_to(ticket_kinds_url) }
       format.xml  { head :ok }
     end
+  end
+
+  protected
+
+  # Set @event variable
+  def assign_event
+    @event = Event.new
+    @event.get_event
   end
 end

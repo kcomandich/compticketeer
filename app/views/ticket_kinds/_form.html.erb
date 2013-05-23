@@ -5,6 +5,16 @@
     <%= f.label :title, "Title of this kind of ticket" %><br />
     <%= f.text_field :title %>
   </p>
+
+  Eventbrite ticket to give access to:
+  <% @eventbrite_tickets.each do |eticket| %>
+    <br/>
+    <%= f.radio_button :eventbrite_ticket_id, eticket['id'] %>
+    <label for="eventbrite_ticket_id_<%= eticket['id'] %>">
+      <%= eticket['name'] %>
+    </label>
+  <% end %>
+
   <p>
     <%= f.label :prefix, "Prefix to add to discount code" %><br />
     <%= f.text_field :prefix %>
