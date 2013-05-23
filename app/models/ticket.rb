@@ -124,39 +124,27 @@ class Ticket < ActiveRecord::Base
       query[key] = SECRETS.eventbrite_data[key]
     end
 
-    # TODO refactor this to shorten the code, eliminate redundancy, etc
-    res = eventbrite_request('discount_new', query)
-    case res
-    when Net::HTTPOK
-      begin
-        answer = JSON.parse(res.body)
-        if answer['error']
-          if answer['error'].try(:[], 'error_message').to_s =~ /already in use/
-            # Ticket exists succeeded
-            self.update_attribute :report, "EventBrite code already exists: #{res.body}"
-            self.registered_code!
-            return true
-          else
-            # Has error of some other kind
-            self.update_attribute :report, "Could not register EventBrite code: #{res.body}"
-            self.failed_to_register_code!
-            return false
-          end
-        else
-          # Registration succeeded
-          self.update_attribute :report, "Registered EventBrite code: #{res.body}"
-          self.registered_code!
-          return true
-        end
-      rescue JSON::ParserError => e
-        self.update_attribute :report, "Could not parse EventBrite JSON response: #{res.body}"
-        self.failed_to_register_code!
-        return false
+    status, message = eventbrite_request('discount_new', query, method(:parse_discount_new_response))
+
+    status ? self.registered_code! : self.failed_to_register_code!
+    self.update_attribute :report, message
+
+    return status
+  end
+
+  def parse_discount_new_response(res)
+    answer = JSON.parse(res.body)
+    if answer['error']
+      if answer['error'].try(:[], 'error_message').to_s =~ /already in use/
+        # Ticket exists succeeded
+        return true, "EventBrite code already exists: #{res.body}"
+      else
+        # Has error of some other kind
+        return false, "Could not register EventBrite code: #{res.body}"
       end
     else
-      self.update_attribute :report, "Could not register EventBrite code, got HTTP status #{res.code}: #{res.body}"
-      self.failed_to_register_code!
-      return false
+      # Registration succeeded
+      return true, "Registered EventBrite code: #{res.body}"
     end
   end
 
@@ -179,8 +167,19 @@ class Ticket < ActiveRecord::Base
     return self.ticket_kind.template.gsub(/%CODE%/i, self.discount_code)
   end
 
-  def eventbrite_request(request, query)
-    return Net::HTTP.post_form(URI.parse("http://www.eventbrite.com/json/#{request}"), query)
+  def eventbrite_request(request, query, parser)
+    res = Net::HTTP.post_form(URI.parse("http://www.eventbrite.com/json/#{request}"), query)
+
+    case res
+    when Net::HTTPOK
+      begin
+        return parser.call(res)
+      rescue JSON::ParserError => e
+        return false, "Could not parse EventBrite JSON response: #{res.body}"
+      end
+    else
+      return false, "Eventbrite request failed, got HTTP status #{res.code}: #{res.body}"
+    end
   end
 
 end
