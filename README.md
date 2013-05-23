@@ -1,7 +1,7 @@
 compticketeer
 =============
 
-This is a Ruby on Rails web application that issues complimentary tickets, such as free tickets to event speakers. An admin enters email addresses into this application, and it then generates unique discount code for each user and sends emails describing how to redeem them. This software currently only works with the EventBrite service.
+This is a Ruby on Rails web application that issues complimentary tickets, such as free tickets to event speakers. An admin enters email addresses into this application, and it then generates unique discount code for each user and sends emails describing how to redeem them. This software currently only works with the Eventbrite service.
 
 
 Setup
@@ -28,4 +28,4 @@ This program is provided under an MIT open source license, read the `LICENSE.txt
 Copyright
 ---------
 
-Copyright (c) 2010 Open Source Bridge, Igal Koshevoy, Kirsten Comandich
+Copyright (c) 2013 Open Source Bridge, Igal Koshevoy, Kirsten Comandich
