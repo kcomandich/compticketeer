@@ -124,7 +124,7 @@ class Ticket < ActiveRecord::Base
       query[key] = SECRETS.eventbrite_data[key]
     end
 
-    status, message = eventbrite_request('discount_new', query, method(:parse_discount_new_response))
+    status, message = Eventbrite.request('discount_new', query, method(:parse_discount_new_response))
 
     status ? self.registered_code! : self.failed_to_register_code!
     self.update_attribute :report, message
@@ -165,21 +165,6 @@ class Ticket < ActiveRecord::Base
   # Return a filled-in template for email.
   def fill_email_template
     return self.ticket_kind.template.gsub(/%CODE%/i, self.discount_code)
-  end
-
-  def eventbrite_request(request, query, parser)
-    res = Net::HTTP.post_form(URI.parse("http://www.eventbrite.com/json/#{request}"), query)
-
-    case res
-    when Net::HTTPOK
-      begin
-        return parser.call(res)
-      rescue JSON::ParserError => e
-        return false, "Could not parse Eventbrite JSON response: #{res.body}"
-      end
-    else
-      return false, "Eventbrite request failed, got HTTP status #{res.code}: #{res.body}"
-    end
   end
 
 end
