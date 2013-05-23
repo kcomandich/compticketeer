@@ -1,11 +1,16 @@
 class Event
   
-  attr_accessor :report
+  attr_accessor :error
   attr_accessor :data
+
+  def title
+    return @error unless @data
+    @data['title']
+  end
 
   def get_event
     if SECRETS.eventbrite_data['app_key'] == 'test'
-      @report = "Couldn't get Eventbrite event because no API key was defined in 'config/secrets.yml'"
+      @error = "Couldn't get Eventbrite event because no API key was defined in 'config/secrets.yml'"
       return false
     end
 
@@ -22,7 +27,7 @@ class Event
   def parse_event_get_response(res)
     answer = JSON.parse(res.body)
     if answer['error']
-      @report = "Could not get Eventbrite event: #{res.body}"
+      @error = "Could not get Eventbrite event: #{res.body}"
       return false
     else
       @data = answer['event']

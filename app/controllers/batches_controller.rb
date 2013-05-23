@@ -1,5 +1,6 @@
 class BatchesController < ApplicationController
   before_filter :assign_ticket_kinds_or_redirect, :only => [:new, :create, :index, :show]
+  before_filter :assign_event, :only => [:new]
 
   # GET /batches
   # GET /batches.xml
@@ -34,9 +35,7 @@ class BatchesController < ApplicationController
   # GET /batches/new.xml
   def new
     @batch = Batch.new
-    event = Event.new
-    event.get_event
-    @eventname = event.data ? event.data['title'] : event.report
+    @eventname = @event.title
 
     respond_to do |format|
       format.html # new.html.erb
@@ -84,5 +83,11 @@ class BatchesController < ApplicationController
     else
       @ticket_kinds = TicketKind.ordered
     end
+  end
+
+  # Set @event variable
+  def assign_event
+    @event = Event.new
+    @event.get_event
   end
 end
