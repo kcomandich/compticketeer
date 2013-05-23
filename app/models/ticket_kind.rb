@@ -10,6 +10,7 @@
 #  created_at :datetime
 #  updated_at :datetime
 #  subject    :string(255)
+#  eventbrite_ticket_id :integer
 #
 
 class TicketKind < ActiveRecord::Base
