@@ -11,6 +11,7 @@
 #  updated_at :datetime
 #  subject    :string(255)
 #  eventbrite_ticket_id :integer
+#  is_access_code :boolean
 #
 
 class TicketKind < ActiveRecord::Base
