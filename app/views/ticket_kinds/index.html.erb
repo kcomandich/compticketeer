@@ -3,12 +3,16 @@
 <table>
   <tr>
     <th>Title</th>
+    <th>Prefix</th>
+    <th>Eventbrite ticket to show</th>
     <th>Manage</th>
   </tr>
 
   <% @ticket_kinds.each do |ticket_kind| %>
     <tr>
       <td><%=h ticket_kind.title %></td>
+      <td><%=h ticket_kind.prefix %></td>
+      <td><%= @event.name_for_ticket(ticket_kind.eventbrite_ticket_id) %></td>
       <td>
         <%= link_to 'Show', ticket_kind_path(ticket_kind) %> |
         <%= link_to 'Edit', edit_ticket_kind_path(ticket_kind) %> |

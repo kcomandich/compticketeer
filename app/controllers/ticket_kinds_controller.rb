@@ -1,5 +1,5 @@
 class TicketKindsController < ApplicationController
-  before_filter :assign_event, :only => [:new, :edit, :show]
+  before_filter :assign_event, :only => [:index, :new, :edit, :show]
 
   # GET /ticket_kinds
   # GET /ticket_kinds.xml
