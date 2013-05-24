@@ -50,7 +50,7 @@ class Batch < ActiveRecord::Base
       if ticket = self.tickets.detect {|ticket| ticket.email == email }
         ticket.update_attributes(:ticket_kind => self.ticket_kind, :batch => self)
       else
-        ticket = Ticket.new(:email => email, :ticket_kind => self.ticket_kind, :batch => self)
+        ticket = Ticket.new(:email => email, :ticket_kind => self.ticket_kind, :batch => self, :event_id => SECRETS.eventbrite_data[:event_id])
         self.tickets << ticket
       end
       Ticket.find_all_by_email(email).each do |prev_ticket|

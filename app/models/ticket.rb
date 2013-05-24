@@ -13,6 +13,7 @@
 #  updated_at     :datetime
 #  discount_code  :string(255)
 #  status         :string(255)
+#  event_id       :integer
 #
 
 class Ticket < ActiveRecord::Base
