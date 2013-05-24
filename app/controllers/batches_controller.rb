@@ -84,10 +84,4 @@ class BatchesController < ApplicationController
       @ticket_kinds = TicketKind.ordered
     end
   end
-
-  # Set @event variable
-  def assign_event
-    @event = Event.new
-    @event.get_event
-  end
 end

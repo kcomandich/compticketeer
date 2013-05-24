@@ -64,4 +64,10 @@ class ApplicationController < ActionController::Base
     redirect_to(session[:return_to] || default)
     session[:return_to] = nil
   end
+
+  # Set @event variable
+  def assign_event
+    @event = Event.new
+    @event.get_event
+  end
 end

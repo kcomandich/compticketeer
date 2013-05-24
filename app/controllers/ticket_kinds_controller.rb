@@ -87,12 +87,4 @@ class TicketKindsController < ApplicationController
       format.xml  { head :ok }
     end
   end
-
-  protected
-
-  # Set @event variable
-  def assign_event
-    @event = Event.new
-    @event.get_event
-  end
 end
