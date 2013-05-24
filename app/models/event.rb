@@ -20,6 +20,14 @@ class Event
     tickets.sort{|a,b| a['name'] <=> b['name']}
   end
 
+  def name_for_ticket(id)
+    return '' unless id
+    return @error unless @data
+    eventbrite_tickets.each do |eticket|
+      return eticket['name'] if eticket['id'] == id
+    end
+  end
+
   def get_event
     if SECRETS.eventbrite_data['app_key'] == 'test'
       @error = "Couldn't get Eventbrite event because no API key was defined in 'config/secrets.yml'"

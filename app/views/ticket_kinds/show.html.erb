@@ -7,11 +7,7 @@
 
 <p>
   <b>Eventbrite ticket to give access to:</b>
-  <% @eventbrite_tickets.each do |eticket| %>
-    <% if eticket['id'] == @ticket_kind.eventbrite_ticket_id %>
-      <%=h eticket['name'] %>
-    <% end %>
-  <% end %>
+  <%= @event.name_for_ticket(@ticket_kind.eventbrite_ticket_id) %>
 </p>
 
 <p>
