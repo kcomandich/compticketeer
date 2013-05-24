@@ -1,4 +1,6 @@
 class TicketsController < ApplicationController
+  before_filter :assign_event, :only => [:index]
+
   # GET /tickets
   # GET /tickets.xml
   def index

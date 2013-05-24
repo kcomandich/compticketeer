@@ -54,4 +54,14 @@ class Event
       return true
     end
   end
+
+  def self.events_list
+    events = SECRETS.eventbrite_data['events']
+  end
+
+  def self.title(id)
+    events_list.keys.each do |e_id|
+      return events_list[e_id] if id == e_id
+    end
+  end
 end

@@ -3,25 +3,27 @@
 <table class="tabular">
   <tr>
     <th>Batch</th>
+    <th>Event</th>
     <th>Status</th>
-    <th>Kind</th>
-    <th>Email</th>
-    <th>Discount Code</th>
+    <th>Kind, Email &amp; Discount Code</th>
     <th>Report</th>
-    <th>Manage</th>
   </tr>
 
 <% @tickets.each do |ticket| %>
   <tr>
     <td><%=h ticket.batch_id %></td>
-    <td class="nowrap"><%=h ticket.status_label %></td>
-    <td class="nowrap"><%=h ticket.ticket_kind.title %></td>
-    <td><%=h ticket.email %></td>
-    <td><%=h ticket.discount_code %></td>
-    <td><%=h ticket.report %></td>
+    <td><%=h Event.title(ticket.event_id) if ticket.event_id %></td>
     <td class="nowrap">
-      <%= link_to 'Show', ticket %>
+      <%=h ticket.status_label %><br />
+      <br />
+      <%= link_to 'Show Ticket', ticket %>
     </td>
+    <td>
+      <%=h ticket.ticket_kind.title %><br />
+      <%=h ticket.email %><br />
+      <%=h ticket.discount_code %><br />
+    </td>
+    <td><%=h ticket.report %></td>
   </tr>
 <% end %>
 </table>
