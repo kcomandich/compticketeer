@@ -10,6 +10,7 @@ describe "/ticket_kinds/new.html.erb" do
       :prefix => "value for prefix",
       :template => "value for template"
     )
+    assigns[:eventbrite_tickets] = @eventbrite_tickets = []
   end
 
   it "renders new ticket_kind form" do

@@ -8,6 +8,8 @@ describe "/ticket_kinds/show.html.erb" do
       :prefix => "value for prefix",
       :template => "value for template"
     )
+    assigns[:eventbrite_tickets] = @eventbrite_tickets = []
+    assigns[:event] = @event = Event.new
   end
 
   it "renders attributes in <p>" do

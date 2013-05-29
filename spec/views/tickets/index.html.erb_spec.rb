@@ -11,6 +11,6 @@ describe "/tickets/index.html.erb" do
 
   it "renders a list of tickets" do
     render
-    response.should have_tag("tr>td", "foo@bar.com".to_s, 2)
+    response.should have_tag("tr>td", /foo@bar.com/, 2)
   end
 end

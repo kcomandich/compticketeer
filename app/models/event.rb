@@ -20,11 +20,11 @@ class Event
     tickets.sort{|a,b| a['name'] <=> b['name']}
   end
 
-  def name_for_ticket(id)
-    return '' unless id
+  def name_for_ticket(ticket_id)
+    return '' unless ticket_id
     return @error unless @data
     eventbrite_tickets.each do |eticket|
-      return eticket['name'] if eticket['id'] == id
+      return eticket['name'] if eticket['id'] == ticket_id
     end
   end
 

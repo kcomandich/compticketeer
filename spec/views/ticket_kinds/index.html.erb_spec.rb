@@ -8,6 +8,8 @@ describe "/ticket_kinds/index.html.erb" do
       Factory(:ticket_kind, :title => "value for title", :prefix => "value for prefix", :template => "value for template"),
       Factory(:ticket_kind, :title => "value for title", :prefix => "value for prefix", :template => "value for template"),
     ]
+    assigns[:eventbrite_tickets] = @eventbrite_tickets = []
+    assigns[:event] = @event = Event.new
   end
 
   it "renders a list of ticket_kinds" do
