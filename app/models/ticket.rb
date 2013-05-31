@@ -22,7 +22,7 @@ class Ticket < ActiveRecord::Base
   belongs_to :ticket_kind
 
   # Scopes
-  named_scope :ordered, :order => 'created_at desc'
+  named_scope :ordered, :order => 'created_at desc', :include => :ticket_kind
 
   # Validations
   validates_presence_of :batch
