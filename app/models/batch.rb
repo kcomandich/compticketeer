@@ -50,12 +50,12 @@ class Batch < ActiveRecord::Base
       if ticket = self.tickets.detect {|ticket| ticket.email == email }
         ticket.update_attributes(:ticket_kind => self.ticket_kind, :batch => self)
       else
-        ticket = Ticket.new(:email => email, :ticket_kind => self.ticket_kind, :batch => self, :event_id => SECRETS.eventbrite_data[:event_id])
+        ticket = Ticket.new(:email => email, :ticket_kind => self.ticket_kind, :batch => self, :event_id => SECRETS.eventbrite_data['event_id'])
         self.tickets << ticket
       end
-      Ticket.find_all_by_email(email).each do |prev_ticket|
+      Ticket.find_all_by_email_and_event_id(email, SECRETS.eventbrite_data['event_id']).each do |prev_ticket|
         # TODO how to pass this message to controller/view
-        logger.warn "Warning: This email [#{email}] already has a #{prev_ticket.ticket_kind.title.upcase} ticket code, emailed status = #{prev_ticket.status.to_s.upcase}"
+        logger.warn "Warning: This email [#{email}] already has a #{prev_ticket.ticket_kind.title.upcase} ticket code, emailed status = #{prev_ticket.status.to_s.upcase} for this event."
       end
     end
   end
