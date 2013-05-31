@@ -7,7 +7,7 @@
   </p>
 
   <p>
-    <%= f.check_box :is_access_code, :checked => 'checked' %>
+    <%= f.check_box :is_access_code, :onclick => "$('#access').toggle()" %>
     <%= f.label :is_access_code, "Access code?" %><br />
     <span class="label_note">
       Use an Access code to reveal a hidden free ticket (select below).<br>
@@ -15,8 +15,7 @@
     </span>
   </p>
 
-  <!-- TODO hide this when is_access_code is not checked -->
-  <div id="access">
+  <div id="access" <%= "style='display:none'" unless @ticket_kind.is_access_code %> >
     Eventbrite ticket to give access to:
     <% @eventbrite_tickets.each do |eticket| %>
       <br/>

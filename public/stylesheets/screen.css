@@ -71,3 +71,9 @@ table td {
     color: #666;
     font-style: italic;
 }
+
+#access {
+  background : #eee;
+  padding : 5px 10px 10px 20px;
+  width : 300px;
+}
