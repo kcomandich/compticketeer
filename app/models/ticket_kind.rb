@@ -16,6 +16,8 @@
 
 class TicketKind < ActiveRecord::Base
   named_scope :ordered, :order => "lower(title) asc"
+  named_scope :access_kinds, :conditions => { :is_access_code => true }
+  named_scope :discount_kinds, :conditions => { :is_access_code => false }
 
   has_many :tickets, :dependent => :destroy
 

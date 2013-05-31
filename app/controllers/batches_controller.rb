@@ -81,7 +81,8 @@ class BatchesController < ApplicationController
       flash[:error] = "You must create at least one kind of ticket before creating tickets."
       redirect_to new_ticket_kind_path
     else
-      @ticket_kinds = TicketKind.ordered
+      @discount_ticket_kinds = TicketKind.discount_kinds.ordered
+      @access_ticket_kinds = TicketKind.access_kinds.ordered
     end
   end
 end
