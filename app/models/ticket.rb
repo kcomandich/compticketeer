@@ -97,24 +97,47 @@ class Ticket < ActiveRecord::Base
 
   # Process this ticket and return the status.
   def process
-    self.register_code
+    self.ticket_kind.is_access_code ? self.register_access_code : self.register_discount_code
     self.send_email
     return self.status
   end
 
-  # Register the discount code with Eventbrite.
-  def register_code
+  # Register the access code with Eventbrite.
+  def register_access_code
     self.registering_code!
     if self.class.disable_register_code
       self.registered_code!
       return false
     end
 
-    if SECRETS.eventbrite_data['app_key'] == 'test'
-      self.update_attribute :report, "Couldn't register Eventbrite code because no API key was defined in 'config/secrets.yml'"
-      self.failed_to_register_code!
+    return false unless valid_secrets?
+
+    query = {
+      'code' => self.discount_code,
+      'quantity_available' => '1',
+      'tickets' => self.ticket_kind.eventbrite_ticket_id
+    }
+    for key in %w[app_key user_key event_id]
+      query[key] = SECRETS.eventbrite_data[key]
+    end
+
+    status, message = Eventbrite.request('access_code_new', query, method(:parse_discount_new_response))
+
+    status ? self.registered_code! : self.failed_to_register_code!
+    self.update_attribute :report, message
+
+    return status
+  end
+
+  # Register the discount code with Eventbrite.
+  def register_discount_code
+    self.registering_code!
+    if self.class.disable_register_code
+      self.registered_code!
       return false
     end
+
+    return false unless valid_secrets?
 
     query = {
       'code' => self.discount_code,
@@ -131,6 +154,16 @@ class Ticket < ActiveRecord::Base
     self.update_attribute :report, message
 
     return status
+  end
+
+  def valid_secrets?
+    if SECRETS.eventbrite_data['app_key'] == 'test'
+      self.update_attribute :report, "Couldn't register Eventbrite code because no API key was defined in 'config/secrets.yml'"
+      self.failed_to_register_code!
+      logger.warn "Couldn't register Eventbrite code because no API key was defined in 'config/secrets.yml'"
+      return false
+    end
+    return true
   end
 
   def parse_discount_new_response(res)

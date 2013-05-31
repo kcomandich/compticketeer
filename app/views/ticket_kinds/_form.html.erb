@@ -6,14 +6,26 @@
     <%= f.text_field :title %>
   </p>
 
-  Eventbrite ticket to give access to:
-  <% @eventbrite_tickets.each do |eticket| %>
-    <br/>
-    <%= f.radio_button :eventbrite_ticket_id, eticket['id'] %>
-    <label for="eventbrite_ticket_id_<%= eticket['id'] %>">
-      <%= eticket['name'] %>
-    </label>
-  <% end %>
+  <p>
+    <%= f.check_box :is_access_code, :checked => 'checked' %>
+    <%= f.label :is_access_code, "Access code?" %><br />
+    <span class="label_note">
+      Use an Access code to reveal a hidden free ticket (select below).<br>
+      Otherwise it will be a Discount code: a more generic code that makes the Regular ticket free.
+    </span>
+  </p>
+
+  <!-- TODO hide this when is_access_code is not checked -->
+  <div id="access">
+    Eventbrite ticket to give access to:
+    <% @eventbrite_tickets.each do |eticket| %>
+      <br/>
+      <%= f.radio_button :eventbrite_ticket_id, eticket['id'] %>
+      <label for="eventbrite_ticket_id_<%= eticket['id'] %>">
+        <%= eticket['name'] %>
+      </label>
+    <% end %>
+  </div>
 
   <p>
     <%= f.label :prefix, "Prefix to add to discount code" %><br />
