@@ -21,7 +21,7 @@
     <td>
       <%=h ticket.ticket_kind.title %><br />
       <%=h ticket.email %><br />
-      <%=h ticket.discount_code %><br />
+      <%=h ticket.discount_code %><%= " &nbsp;<span class='label_note'>access code</span>" if ticket.ticket_kind.is_access_code %><br />
     </td>
     <td><%=h ticket.report %></td>
   </tr>
