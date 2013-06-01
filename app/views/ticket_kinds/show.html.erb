@@ -7,11 +7,16 @@
 
 <p>
   <b>Access Code?</b>
-  <%= @ticket_kind.is_access_code ? 'yes' : 'no' %>
+<% if @ticket_kind.is_access_code %>
+  yes
 </p>
-<p><!-- TODO hide when not an access code -->
+<p>
   <b>Eventbrite ticket to give access to:</b>
-  <%= @event.name_for_ticket(@ticket_kind.eventbrite_ticket_id) %>
+  <%= Event.name_for_ticket(@ticket_kind.eventbrite_ticket_id) %>
+</p>
+<% else %>
+  no
+<% end %>
 </p>
 
 <p>

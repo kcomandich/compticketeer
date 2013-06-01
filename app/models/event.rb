@@ -8,24 +8,21 @@ class Event
     @data['title']
   end
 
-  def eventbrite_tickets
-    return @error unless @data
-    tickets = @data['tickets'].map{ |t| t['ticket'] }
-    tickets.sort{|a,b| a['name'] <=> b['name']}
+  def self.eventbrite_tickets
+    SECRETS.eventbrite_data['ticket_list']
+  end
+
+  def self.name_for_ticket(ticket_id)
+    return '' unless ticket_id
+    eventbrite_tickets.keys.each do |e_id|
+      return eventbrite_tickets[e_id] if ticket_id == e_id
+    end
   end
 
   def eventbrite_free_hidden_tickets
     return @error unless @data
     tickets = @data['tickets'].map{ |t| t['ticket'] if (t['ticket']['price'] == "0.00" and t['ticket']['visible'] == "false") }.compact
     tickets.sort{|a,b| a['name'] <=> b['name']}
-  end
-
-  def name_for_ticket(ticket_id)
-    return '' unless ticket_id
-    return @error unless @data
-    eventbrite_tickets.each do |eticket|
-      return eticket['name'] if eticket['id'] == ticket_id
-    end
   end
 
   def get_event
@@ -56,10 +53,11 @@ class Event
   end
 
   def self.events_list
-    events = SECRETS.eventbrite_data['events']
+    SECRETS.eventbrite_data['event_list']
   end
 
   def self.title(id)
+    return '' unless id
     events_list.keys.each do |e_id|
       return events_list[e_id] if id == e_id
     end

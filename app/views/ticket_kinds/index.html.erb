@@ -12,7 +12,7 @@
     <tr>
       <td><%=h ticket_kind.title %></td>
       <td><%=h ticket_kind.prefix %></td>
-      <td><%= ticket_kind.is_access_code ? "yes: #{@event.name_for_ticket(ticket_kind.eventbrite_ticket_id)} ticket" : "no" %></td>
+      <td><%= ticket_kind.is_access_code ? "yes: #{Event.name_for_ticket(ticket_kind.eventbrite_ticket_id)} ticket" : "no" %></td>
       <td>
         <%= link_to 'Show', ticket_kind_path(ticket_kind) %> |
         <%= link_to 'Edit', edit_ticket_kind_path(ticket_kind) %> |
