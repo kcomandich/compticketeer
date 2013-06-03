@@ -131,19 +131,19 @@ describe Ticket do
 
     it "should register code and send email" do
       ticket = Factory(:ticket)
-      ticket.should_receive(:register_code)
+      ticket.should_receive(:register_discount_code)
       ticket.should_receive(:send_email)
       ticket.process
     end
   end
 
-  describe "register_code" do
+  describe "register_discount_code" do
     it "should not register during tests unless overridden" do
       ticket = Factory(:ticket)
       Net::HTTP.should_not_receive(:post_form)
 
       Ticket.disable_register_code.should be_true
-      ticket.register_code.should be_false
+      ticket.register_discount_code.should be_false
     end
 
     it "should register" do
@@ -155,7 +155,7 @@ describe Ticket do
       Net::HTTP.should_receive(:post_form).and_return(res)
       ticket = Factory(:ticket)
 
-      ticket.register_code.should be_true
+      ticket.register_discount_code.should be_true
       ticket.status.should == "registered_code"
     end
 
@@ -169,7 +169,7 @@ describe Ticket do
 
       ticket = Factory(:ticket)
 
-      ticket.register_code.should be_true
+      ticket.register_discount_code.should be_true
       ticket.status.should == "registered_code"
       ticket.report.should =~ /already exists/
     end
@@ -183,7 +183,7 @@ describe Ticket do
       Net::HTTP.should_receive(:post_form).and_return(res)
       ticket = Factory(:ticket)
 
-      ticket.register_code.should be_false
+      ticket.register_discount_code.should be_false
       ticket.report.should =~ /Discount error/
       ticket.status.should == "failed_to_register_code"
     end
@@ -197,7 +197,7 @@ describe Ticket do
       Net::HTTP.should_receive(:post_form).and_return(res)
       ticket = Factory(:ticket)
 
-      ticket.register_code.should be_false
+      ticket.register_discount_code.should be_false
       ticket.report.should =~ /JSON/
       ticket.status.should == "failed_to_register_code"
     end
@@ -211,7 +211,7 @@ describe Ticket do
       Net::HTTP.should_receive(:post_form).and_return(res)
       ticket = Factory(:ticket)
 
-      ticket.register_code.should be_false
+      ticket.register_discount_code.should be_false
       ticket.report.should =~ /401.+Get off my lawn/
       ticket.status.should == "failed_to_register_code"
     end
@@ -223,7 +223,7 @@ describe Ticket do
       Net::HTTP.should_not_receive(:post_form)
       ticket = Factory(:ticket)
 
-      ticket.register_code.should be_false
+      ticket.register_discount_code.should be_false
       ticket.report.should =~ /.+secrets\.yml.+/
       ticket.status.should == "failed_to_register_code"
     end

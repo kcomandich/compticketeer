@@ -5,7 +5,8 @@ describe "/batches/new.html.erb" do
 
   before(:each) do
     assigns[:batch] = Factory.build(:batch, :ticket_kind => nil)
-    assigns[:ticket_kinds] = [Factory.stub :ticket_kind]
+    assigns[:access_ticket_kinds] = [Factory.stub :ticket_kind]
+    assigns[:discount_ticket_kinds] = [Factory.stub :ticket_kind]
   end
 
   it "renders new batch form" do
