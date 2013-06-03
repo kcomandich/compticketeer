@@ -1,6 +1,7 @@
 source :rubygems
 
 gem 'rails', '2.3.17'
+gem 'rake', '0.8.7'
 gem 'sqlite3', '1.3.3'
 
 gem 'aasm', '2.2.0'
