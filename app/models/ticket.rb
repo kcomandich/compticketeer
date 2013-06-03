@@ -114,7 +114,7 @@ class Ticket < ActiveRecord::Base
 
     query = {
       'code' => self.discount_code,
-      'quantity_available' => '1',
+      'quantity_available' => '3',
       'tickets' => self.ticket_kind.eventbrite_ticket_id
     }
     for key in %w[app_key user_key event_id]
@@ -142,7 +142,7 @@ class Ticket < ActiveRecord::Base
     query = {
       'code' => self.discount_code,
       'percent_off' => '100',
-      'quantity_available' => '1',
+      'quantity_available' => '3',
     }
     for key in %w[app_key user_key event_id tickets]
       query[key] = SECRETS.eventbrite_data[key]
