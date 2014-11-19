@@ -17,6 +17,7 @@ class Event
     eventbrite_tickets.keys.each do |e_id|
       return eventbrite_tickets[e_id] if ticket_id == e_id
     end
+    return "[Error: current event doesn't contain this ticket. Assign new ticket.]"
   end
 
   def eventbrite_free_hidden_tickets
