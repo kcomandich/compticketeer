@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+ruby '1.8.7'
 gem 'rails', '2.3.17'
 gem 'rake', '0.8.7'
 gem 'sqlite3', '1.3.3'
