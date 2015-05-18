@@ -99,7 +99,7 @@ describe TicketKindsController do
       create_record
       delete :destroy, :id => @record.id
       expect(response).to redirect_to(ticket_kinds_path)
-      expect(TicketKind.exists?(@record.id)).to be_false
+      expect(TicketKind.exists?(@record.id)).to be_falsey
     end
   end
 

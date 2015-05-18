@@ -37,25 +37,25 @@ describe Ticket do
 
   describe "done?" do
     it "expects to be true for successfully finished work" do
-      expect(create(:ticket, :status => :sent_email).done?).to be_true
+      expect(create(:ticket, :status => :sent_email).done?).to be_truthy
     end
 
     it "expects to be true for failed finished work" do
-      expect(create(:ticket, :status => :failed_to_send_email).done?).to be_true
+      expect(create(:ticket, :status => :failed_to_send_email).done?).to be_truthy
     end
     
     it "expects to be false for unfinished work" do
-      expect(create(:ticket, :status => :sending_email).done?).to be_false
+      expect(create(:ticket, :status => :sending_email).done?).to be_falsey
     end
   end
 
   describe "success?" do
     it "expects to be true if successfully completed" do
-      expect(create(:ticket, :status => :sent_email).success?).to be_true
+      expect(create(:ticket, :status => :sent_email).success?).to be_truthy
     end
 
     it "expects to be false if ended in failure" do
-      expect(create(:ticket, :status => :failed_to_send_email).success?).to be_false
+      expect(create(:ticket, :status => :failed_to_send_email).success?).to be_falsey
     end
 
     it "expects to be nil if not done" do
@@ -125,88 +125,88 @@ describe Ticket do
       ticket = create(:ticket)
       expect(Net::HTTP).to_not receive(:post_form)
 
-      expect(Ticket.disable_register_code).to be_true
-      expect(ticket.register_discount_code).to be_false
+      expect(Ticket.disable_register_code).to be_truthy
+      expect(ticket.register_discount_code).to be_falsey
     end
 
     it "expects to register" do
-      Ticket.stub!(:disable_register_code => false)
+      allow(Ticket).to receive_messages(:disable_register_code => false)
       stub_eventbrite_secrets
 
       res = Net::HTTPOK.new('1.1', '200', 'Yay!')
-      res.stub!(:body => {"process"=>{"id"=>268329, "message"=>"discount_new : Complete ", "status"=>"OK"}}.to_json)
+      allow(res).to receive_messages(:body => {"process"=>{"id"=>268329, "message"=>"discount_new : Complete ", "status"=>"OK"}}.to_json)
       expect(Net::HTTP).to receive(:post_form).and_return(res)
       ticket = create(:ticket)
 
-      expect(ticket.register_discount_code).to be_true
+      expect(ticket.register_discount_code).to be_truthy
       expect(ticket.status).to == "registered_code"
     end
 
     it "expects to succeed if discount code already exists" do
-      Ticket.stub!(:disable_register_code => false)
+      allow(Ticket).to receive_messages(:disable_register_code => false)
       stub_eventbrite_secrets
 
       res = Net::HTTPOK.new('1.1', '200', 'Yay!')
-      res.stub!(:body => {"error"=>{"error_message"=>"The discount code \"volunteer_foo\" is already in use.", "error_type"=>"Discount error"}}.to_json)
+      allow(res).to receive_messages(:body => {"error"=>{"error_message"=>"The discount code \"volunteer_foo\" is already in use.", "error_type"=>"Discount error"}}.to_json)
       expect(Net::HTTP).to receive(:post_form).and_return(res)
 
       ticket = create(:ticket)
 
-      expect(ticket.register_discount_code).to be_true
+      expect(ticket.register_discount_code).to be_truthy
       expect(ticket.status).to == "registered_code"
       expect(ticket.report).to =~ /already exists/
     end
 
     it "expects to fail if EventBrite responds with an API error" do
-      Ticket.stub!(:disable_register_code => false)
+      allow(Ticket).to receive_messages(:disable_register_code => false)
       stub_eventbrite_secrets
 
       res = Net::HTTPOK.new('1.1', '200', 'Yay!')
-      res.stub!(:body => {"error"=>{"error_message"=>"Please enter a valid discount code.", "error_type"=>"Discount error"}}.to_json)
+      allow(res).to receive_messages(:body => {"error"=>{"error_message"=>"Please enter a valid discount code.", "error_type"=>"Discount error"}}.to_json)
       expect(Net::HTTP).to receive(:post_form).and_return(res)
       ticket = create(:ticket)
 
-      expect(ticket.register_discount_code).to be_false
+      expect(ticket.register_discount_code).to be_falsey
       expect(ticket.report).to =~ /Discount error/
       expect(ticket.status).to == "failed_to_register_code"
     end
 
     it "expects to fail if EventBrite responds with invalid JSON" do
-      Ticket.stub!(:disable_register_code => false)
+      allow(Ticket).to receive_messages(:disable_register_code => false)
       stub_eventbrite_secrets
 
       res = Net::HTTPOK.new('1.1', '200', 'Yay!')
-      res.stub!(:body => 'invalid/json')
+      allow(res).to receive_messages(:body => 'invalid/json')
       expect(Net::HTTP).to receive(:post_form).and_return(res)
       ticket = create(:ticket)
 
-      expect(ticket.register_discount_code).to be_false
+      expect(ticket.register_discount_code).to be_falsey
       expect(ticket.report).to =~ /JSON/
       expect(ticket.status).to == "failed_to_register_code"
     end
 
     it "expects to fail if EventBrite rejects request" do
-      Ticket.stub!(:disable_register_code => false)
+      allow(Ticket).to receive_messages(:disable_register_code => false)
       stub_eventbrite_secrets
 
       res = Net::HTTPForbidden.new('1.1', '401', 'Go away!')
-      res.stub!(:body => 'Get off my lawn!')
+      allow(res).to receive_messages(:body => 'Get off my lawn!')
       expect(Net::HTTP).to receive(:post_form).and_return(res)
       ticket = create(:ticket)
 
-      expect(ticket.register_discount_code).to be_false
+      expect(ticket.register_discount_code).to be_falsey
       expect(ticket.report).to =~ /401.+Get off my lawn/
       expect(ticket.status).to == "failed_to_register_code"
     end
 
     it "expects to fail if Rails.application.secrets haven't been configured" do
-      Ticket.stub!(:disable_register_code => false)
+      allow(Ticket).to receive_messages(:disable_register_code => false)
       stub_invalid_eventbrite_secrets
 
       expect(Net::HTTP).to_not receive(:post_form)
       ticket = create(:ticket)
 
-      expect(ticket.register_discount_code).to be_false
+      expect(ticket.register_discount_code).to be_falsey
       expect(ticket.report).to =~ /.+secrets\.yml.+/
       expect(ticket.status).to == "failed_to_register_code"
     end

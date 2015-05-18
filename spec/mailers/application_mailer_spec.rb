@@ -14,7 +14,7 @@ describe ApplicationMailer do
   end
 
   it "expects to not send ticket if ApplicationMailer is not configured" do
-    ApplicationMailer.stub!(:configured? => false)
+    allow(ApplicationMailer).to receive_messages(:configured? => false)
 
     expect(lambda { ApplicationMailer.ticket_email(@ticket).deliver_later }).to raise_error(ArgumentError)
   end
