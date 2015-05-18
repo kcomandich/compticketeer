@@ -24,14 +24,14 @@ describe TicketKindsController do
       get :index
       expect(response).to be_success
       expect(flash[:error]).to be_blank
-      expect(assigns[:ticket_kinds]).to == @records
+      expect(assigns[:ticket_kinds]).to eq @records
     end
 
     it "expects to list empty set" do
       get :index
       expect(response).to be_success
       expect(flash[:error]).to be_blank
-      expect(assigns[:ticket_kinds]).to == []
+      expect(assigns[:ticket_kinds]).to eq []
     end
   end
 
@@ -64,7 +64,7 @@ describe TicketKindsController do
       create_record
       get :show, :id => @record.id
       expect(response).to be_success
-      expect(assigns[:ticket_kind]).to == @record
+      expect(assigns[:ticket_kind]).to eq @record
     end
   end
 
@@ -73,7 +73,7 @@ describe TicketKindsController do
       create_record
       get :edit, :id => @record.id
       expect(response).to be_success
-      expect(assigns[:ticket_kind]).to == @record
+      expect(assigns[:ticket_kind]).to eq @record
     end
   end
 
@@ -82,14 +82,14 @@ describe TicketKindsController do
       create_record
       put :update, :id => @record.id, :ticket_kind => @record.attributes
       expect(response).to redirect_to(ticket_kind_path(@record))
-      expect(assigns[:ticket_kind]).to == @record
+      expect(assigns[:ticket_kind]).to eq @record
     end
 
     it "expects to fail with invalid attributes" do
       create_record
       put :update, :id => @record.id, :ticket_kind => { :title => nil }
       expect(response).to be_success
-      expect(assigns[:ticket_kind]).to == @record
+      expect(assigns[:ticket_kind]).to eq @record
       expect(assigns[:ticket_kind].errors.full_messages.first).to =~ /title can't be blank/i
     end
   end

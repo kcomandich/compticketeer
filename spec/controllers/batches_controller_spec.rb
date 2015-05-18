@@ -42,7 +42,7 @@ describe BatchesController do
         expect(flash[:error]).to be_blank
 
         assigns[:batch].tickets.each do |ticket|
-          expect(ticket.status).to == "sent_email"
+          expect(ticket.status).to eq "sent_email"
         end
       end
 
@@ -90,11 +90,11 @@ describe BatchesController do
         
         describe "for batch" do
           it "expects to include attributes" do
-            expect(@data['batch']['ticket_kind_id']).to == @batch.ticket_kind_id
+            expect(@data['batch']['ticket_kind_id']).to eq @batch.ticket_kind_id
           end
 
           it "expects to include selected methods" do
-            expect(@data['batch']['done?']).to == @batch.done?
+            expect(@data['batch']['done?']).to eq @batch.done?
           end
           
           it "expects to not include unselected methods" do
@@ -105,15 +105,15 @@ describe BatchesController do
         describe "for tickets" do
           before do
              @ticket_data = @data['batch']['tickets'].first
-             @ticket = @batch.tickets.detect{ |ticket| ticket.id == @ticket_data['id'] }
+             @ticket = @batch.tickets.detect{ |ticket| ticket.id eq @ticket_data['id'] }
           end
 
           it "expects to include attributes" do
-            expect(@ticket_data['status']).to == @ticket.status
+            expect(@ticket_data['status']).to eq @ticket.status
           end
 
           it "expects to include selected methods" do
-            expect(@ticket_data['status_label']).to == @ticket.status_label
+            expect(@ticket_data['status_label']).to eq @ticket.status_label
           end
 
           it "expects to not include unselected methods" do
@@ -129,7 +129,7 @@ describe BatchesController do
         delete :destroy, id: batch.id
         expect(response).to redirect_to(batches_path)
         assigns[:batch] == batch
-        expect(Batch.exists?(batch.id)).to == false
+        expect(Batch.exists?(batch.id)).to eq false
       end
     end
   end
@@ -171,7 +171,7 @@ def mock_batch(stubs={})
     it "assigns all batches as @batches" do
       Batch.stub(:find).with(:all).and_return([mock_batch])
       get :index
-      expect(assigns[:batches]).to == [mock_batch]
+      expect(assigns[:batches]).to equal [mock_batch]
     end
   end
 

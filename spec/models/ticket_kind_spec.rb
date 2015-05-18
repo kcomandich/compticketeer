@@ -10,7 +10,7 @@ describe TicketKind do
   end
 
   it "expects to set the prefix correctly" do
-    expect(create(:ticket_kind, :title => 'Volunteer').prefix).to == 'volunteer'
+    expect(create(:ticket_kind, :title => 'Volunteer').prefix).to eq 'volunteer'
   end
 
   it "expects to not set prefix if no title is set" do

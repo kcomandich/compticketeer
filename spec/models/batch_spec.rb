@@ -6,8 +6,8 @@ describe Batch do
 
     expect(batch).to_not be_valid
 
-    expect(batch.errors.size).to == 1
-    expect(batch.errors.full_messages.first).to =~ /omgwtfbbq/
+    expect(batch.errors.size).to eq 1
+    expect(batch.errors.full_messages.first).to match /omgwtfbbq/
   end
 
   describe "with valid arguments" do
@@ -23,7 +23,7 @@ describe Batch do
     end
 
     it "expects to create associated tickets" do
-      expect(@batch.tickets.size).to == 2
+      expect(@batch.tickets.size).to eq 2
       expect(@batch.tickets.map(&:email)).to include("foo@bar.com")
       expect(@batch.tickets.map(&:email)).to include("baz@qux.org")
     end

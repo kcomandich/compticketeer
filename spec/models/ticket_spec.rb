@@ -7,7 +7,7 @@ describe Ticket do
 
   describe "status" do
     it "expects to have 'created' status intially" do
-      expect(create(:ticket, :report => nil).status).to == 'created'
+      expect(create(:ticket, :report => nil).status).to eq 'created'
     end
   end
 
@@ -19,19 +19,19 @@ describe Ticket do
     it "expects to be capitalized" do
       ticket = create(:ticket)
 
-      expect(ticket.status_label).to == ticket.status_label.capitalize
+      expect(ticket.status_label).to eq ticket.status_label.capitalize
     end
 
     it "expects to be able to emit spaces" do
-      expect(create(:ticket, :status => :sending_email).status_label).to =~ /\s/
+      expect(create(:ticket, :status => :sending_email).status_label).to match /\s/
     end
 
     it "expects to put '...' at end of unfinished status" do
-      expect(create(:ticket, :status => :sending_email).status_label).to =~ /\.\.\.$/
+      expect(create(:ticket, :status => :sending_email).status_label).to match /\.\.\.$/
     end
 
     it "expects to put '!' at end of error" do
-      expect(create(:ticket, :status => :failed_to_send_email).status_label).to =~ /!$/
+      expect(create(:ticket, :status => :failed_to_send_email).status_label).to match /!$/
     end
   end
 
@@ -67,7 +67,7 @@ describe Ticket do
     it "expects to assign ticket_kind from the assigned batch" do
       kind = create(:ticket_kind)
       batch = create(:batch, :ticket_kind => kind)
-      expect(create(:ticket, :batch => batch).ticket_kind).to == kind
+      expect(create(:ticket, :batch => batch).ticket_kind).to eq kind
     end
 
     it "expects to not reset ticket_kind if already set" do
@@ -82,7 +82,7 @@ describe Ticket do
     it "expects to be generated" do
       kind = create(:ticket_kind, :title => 'Speaker')
       batch = create(:batch, :ticket_kind => kind)
-      expect(create(:ticket, :email => "foo@bar.com", :batch => batch).discount_code).to =~ /^speaker_foobarcom/
+      expect(create(:ticket, :email => "foo@bar.com", :batch => batch).discount_code).to match /^speaker_foobarcom/
     end
 
     it "expects to not be generated if already set" do
@@ -103,7 +103,7 @@ describe Ticket do
       code1 = ticket.generate_discount_code
       ticket.discount_code = nil
       code2 = ticket.generate_discount_code
-      expect(code1).to == code2
+      expect(code1).to eq code2
     end
   end
 
@@ -139,7 +139,7 @@ describe Ticket do
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_truthy
-      expect(ticket.status).to == "registered_code"
+      expect(ticket.status).to eq "registered_code"
     end
 
     it "expects to succeed if discount code already exists" do
@@ -153,8 +153,8 @@ describe Ticket do
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_truthy
-      expect(ticket.status).to == "registered_code"
-      expect(ticket.report).to =~ /already exists/
+      expect(ticket.status).to eq "registered_code"
+      expect(ticket.report).to match /already exists/
     end
 
     it "expects to fail if EventBrite responds with an API error" do
@@ -167,8 +167,8 @@ describe Ticket do
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey
-      expect(ticket.report).to =~ /Discount error/
-      expect(ticket.status).to == "failed_to_register_code"
+      expect(ticket.report).to match /Discount error/
+      expect(ticket.status).to eq "failed_to_register_code"
     end
 
     it "expects to fail if EventBrite responds with invalid JSON" do
@@ -181,8 +181,8 @@ describe Ticket do
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey
-      expect(ticket.report).to =~ /JSON/
-      expect(ticket.status).to == "failed_to_register_code"
+      expect(ticket.report).to match /JSON/
+      expect(ticket.status).to eq "failed_to_register_code"
     end
 
     it "expects to fail if EventBrite rejects request" do
@@ -195,8 +195,8 @@ describe Ticket do
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey
-      expect(ticket.report).to =~ /401.+Get off my lawn/
-      expect(ticket.status).to == "failed_to_register_code"
+      expect(ticket.report).to match /401.+Get off my lawn/
+      expect(ticket.status).to eq "failed_to_register_code"
     end
 
     it "expects to fail if Rails.application.secrets haven't been configured" do
@@ -207,8 +207,8 @@ describe Ticket do
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey
-      expect(ticket.report).to =~ /.+secrets\.yml.+/
-      expect(ticket.status).to == "failed_to_register_code"
+      expect(ticket.report).to match /.+secrets\.yml.+/
+      expect(ticket.status).to eq "failed_to_register_code"
     end
   end
 end
