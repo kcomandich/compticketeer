@@ -90,7 +90,7 @@ describe TicketKindsController do
       put :update, :id => @record.id, :ticket_kind => { :title => nil }
       expect(response).to be_success
       expect(assigns[:ticket_kind]).to eq @record
-      expect(assigns[:ticket_kind].errors.full_messages.first).to =~ /title can't be blank/i
+      expect(assigns[:ticket_kind].errors.full_messages.first).to match /title can't be blank/i
     end
   end
 

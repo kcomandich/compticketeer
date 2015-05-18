@@ -26,7 +26,7 @@ class TicketKindsController < ApplicationController
 
   # POST /ticket_kinds
   def create
-    @ticket_kind = TicketKind.new(params[:ticket_kind])
+    @ticket_kind = TicketKind.new(ticket_kinds_params)
 
     if @ticket_kind.save
       flash[:notice] = 'TicketKind was successfully created.'
@@ -40,7 +40,7 @@ class TicketKindsController < ApplicationController
   def update
     @ticket_kind = TicketKind.find(params[:id])
 
-    if @ticket_kind.update_attributes(params[:ticket_kind])
+    if @ticket_kind.update_attributes(ticket_kinds_params)
       flash[:notice] = 'TicketKind was successfully updated.'
       redirect_to(@ticket_kind)
     else
@@ -54,5 +54,11 @@ class TicketKindsController < ApplicationController
     @ticket_kind.destroy
 
     redirect_to(ticket_kinds_url)
+  end
+
+  private
+
+  def ticket_kinds_params
+    params.require(:ticket_kind).permit(:title, :prefix, :template, :subject, :eventbrite_ticket_id, :is_access_code, :created_at, :updated_at)
   end
 end
