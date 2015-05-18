@@ -1,5 +1,11 @@
 <% form_for(@ticket_kind) do |f| %>
-  <%= f.error_messages %>
+  <% if @ticket_kind.errors.any? %>
+    <ul>
+      <% @ticket_kind.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
 
   <p>
     <%= f.label :title, "Title of this kind of ticket" %><br />
@@ -7,7 +13,7 @@
   </p>
 
   <p>
-    <%= f.check_box :is_access_code, :onclick => "$('#access').toggle()" %>
+    <%= f.check_box :is_access_code, onclick: "$('#access').toggle()" %>
     <%= f.label :is_access_code, "Access code?" %><br />
     <span class="label_note">
       Use an Access code to reveal a hidden free ticket (select below).<br>

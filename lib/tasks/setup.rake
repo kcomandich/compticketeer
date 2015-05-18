@@ -15,7 +15,7 @@ task 'setup:admin' => :environment do
   if user = User.find_by_login('admin')
     puts %{** Updated "admin" user's password}
   else
-    user = User.new(:login => 'admin', :email => SECRETS.administrator_email)
+    user = User.new(:login => 'admin', :email => Rails.application.secrets.administrator_email)
     puts "** Created new 'admin' user"
   end
   user.password = user.password_confirmation = password

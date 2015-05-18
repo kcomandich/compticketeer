@@ -1,39 +1,21 @@
 class TicketKindsController < ApplicationController
-  before_filter :assign_event, :only => [:index, :new, :edit, :show]
+  before_filter :assign_event, only: [:index, :new, :edit, :show]
 
   # GET /ticket_kinds
-  # GET /ticket_kinds.xml
   def index
     @ticket_kinds = TicketKind.ordered
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @ticket_kinds }
-    end
   end
 
   # GET /ticket_kinds/1
-  # GET /ticket_kinds/1.xml
   def show
     @ticket_kind = TicketKind.find(params[:id])
     @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @ticket_kind }
-    end
   end
 
   # GET /ticket_kinds/new
-  # GET /ticket_kinds/new.xml
   def new
     @ticket_kind = TicketKind.new
     @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @ticket_kind }
-    end
   end
 
   # GET /ticket_kinds/1/edit
@@ -43,48 +25,34 @@ class TicketKindsController < ApplicationController
   end
 
   # POST /ticket_kinds
-  # POST /ticket_kinds.xml
   def create
     @ticket_kind = TicketKind.new(params[:ticket_kind])
 
-    respond_to do |format|
-      if @ticket_kind.save
-        flash[:notice] = 'TicketKind was successfully created.'
-        format.html { redirect_to(@ticket_kind) }
-        format.xml  { render :xml => @ticket_kind, :status => :created, :location => @ticket_kind }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @ticket_kind.errors, :status => :unprocessable_entity }
-      end
+    if @ticket_kind.save
+      flash[:notice] = 'TicketKind was successfully created.'
+      redirect_to(@ticket_kind)
+    else
+      render action: "new"
     end
   end
 
   # PUT /ticket_kinds/1
-  # PUT /ticket_kinds/1.xml
   def update
     @ticket_kind = TicketKind.find(params[:id])
 
-    respond_to do |format|
-      if @ticket_kind.update_attributes(params[:ticket_kind])
-        flash[:notice] = 'TicketKind was successfully updated.'
-        format.html { redirect_to(@ticket_kind) }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @ticket_kind.errors, :status => :unprocessable_entity }
-      end
+    if @ticket_kind.update_attributes(params[:ticket_kind])
+      flash[:notice] = 'TicketKind was successfully updated.'
+      redirect_to(@ticket_kind)
+    else
+      render action: "edit"
     end
   end
 
   # DELETE /ticket_kinds/1
-  # DELETE /ticket_kinds/1.xml
   def destroy
     @ticket_kind = TicketKind.find(params[:id])
     @ticket_kind.destroy
 
-    respond_to do |format|
-      format.html { redirect_to(ticket_kinds_url) }
-      format.xml  { head :ok }
-    end
+    redirect_to(ticket_kinds_url)
   end
 end

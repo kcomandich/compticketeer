@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe "/ticket_kinds/edit.html.erb" do
   include TicketKindsHelper
@@ -16,7 +16,7 @@ describe "/ticket_kinds/edit.html.erb" do
   it "renders the edit ticket_kind form" do
     render
 
-    response.should have_tag("form[action=#{ticket_kind_path(@ticket_kind)}][method=post]") do
+    expect(response).to have_tag("form[action=#{ticket_kind_path(@ticket_kind)}][method=post]") do
       with_tag('input#ticket_kind_title[name=?]', "ticket_kind[title]")
       with_tag('input#ticket_kind_prefix[name=?]', "ticket_kind[prefix]")
       with_tag('textarea#ticket_kind_template[name=?]', "ticket_kind[template]")

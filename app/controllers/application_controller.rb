@@ -1,24 +1,10 @@
-# Filters added to this controller apply to all controllers in the application.
-# Likewise, all the methods added will be available for all controllers.
-
 class ApplicationController < ActionController::Base
-  # Include all helpers, all the time
   helper :all
+  # Prevent CSRF attacks by raising an exception.
+  # For APIs, you may want to use :null_session instead.
+  protect_from_forgery with: :exception
 
-  # See ActionController::RequestForgeryProtection for details
-  protect_from_forgery
-
-  # Scrub sensitive parameters from your log
-  filter_parameter_logging :password, :password_confirmation
-
-  # Filters
   before_filter :require_user
-
-  # Exception notification, setup in "config/initializers/exception_notification.rb"
-  if EXCEPTION_NOTIFICATION_ENABLED
-    include ExceptionNotifiable
-    local_addresses.clear
-  end
 
   protected
 
@@ -57,7 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
-    session[:return_to] = request.request_uri
+    session[:return_to] = request.fullpath
   end
 
   def redirect_back_or_default(default)

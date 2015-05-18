@@ -1,33 +1,13 @@
-# == Schema Information
-# Schema version: 20100502225937
-#
-# Table name: tickets
-#
-#  id             :integer         not null, primary key
-#  ticket_kind_id :integer
-#  batch_id       :integer
-#  email          :string(255)
-#  report         :text(2048)
-#  processed_at   :datetime
-#  created_at     :datetime
-#  updated_at     :datetime
-#  discount_code  :string(255)
-#  status         :string(255)
-#  event_id       :integer
-#
-
 class Ticket < ActiveRecord::Base
-  # Associations
   belongs_to :batch
   belongs_to :ticket_kind
 
-  # Scopes
-  named_scope :ordered, :order => 'created_at desc', :include => :ticket_kind
+  scope :ordered, -> { order('created_at desc').includes(:ticket_kind) }
 
   # Validations
   validates_presence_of :batch
   validates_presence_of :ticket_kind
-  validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :on => :create
+  validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, on: :create
 
   # Callbacks
   before_validation :set_ticket_kind
@@ -38,21 +18,22 @@ class Ticket < ActiveRecord::Base
 
   # Acts As State Machine
   include AASM
-  aasm_column :status
-  aasm_initial_state :created
-  aasm_state :created
-  aasm_state :registering_code
-  aasm_state :registered_code
-  aasm_state :failed_to_register_code
-  aasm_state :sending_email
-  aasm_state :sent_email
-  aasm_state :failed_to_send_email
-  aasm_event(:registering_code)        { transitions :to => :registering_code,        :from => :created }
-  aasm_event(:registered_code)         { transitions :to => :registered_code,         :from => :registering_code }
-  aasm_event(:failed_to_register_code) { transitions :to => :failed_to_register_code, :from => :registering_code }
-  aasm_event(:sending_email)           { transitions :to => :sending_email,           :from => :registered_code }
-  aasm_event(:sent_email)              { transitions :to => :sent_email,              :from => :sending_email }
-  aasm_event(:failed_to_send_email)    { transitions :to => :failed_to_send_email,    :from => :sending_email }
+  aasm column: :status do
+    state :created, initial: true
+    state :registering_code
+    state :registered_code
+    state :failed_to_register_code
+    state :sending_email
+    state :sent_email
+    state :failed_to_send_email
+
+    event :registering_code        do transitions from: :created,          to: :registering_code end
+    event :registered_code         do transitions from: :registering_code, to: :registered_code end
+    event :failed_to_register_code do transitions from: :registering_code, to: :failed_to_register_code end
+    event :sending_email           do transitions from: :registered_code,  to: :sending_email end
+    event :sent_email              do transitions from: :sending_email,    to: :sent_email end
+    event :failed_to_send_email    do transitions from: :sending_email,    to: :failed_to_send_email end
+  end
 
   # Return human-readable label for status.
   def status_label
@@ -87,7 +68,7 @@ class Ticket < ActiveRecord::Base
       # Add a prefix to the ticket if possible
       s = self.ticket_kind ? (self.ticket_kind.prefix + '_') : ''
       # Generate a discount code based on the user's email
-      salted_email = "#{self.email} #{SECRETS.discount_code_salt}"
+      salted_email = "#{self.email} #{Rails.application.secrets.discount_code_salt}"
       email_hash = Digest::MD5.hexdigest(salted_email)[0..6]
       email_fragment = self.email.gsub(/\W/, '')
       s << "#{email_fragment}_#{email_hash}"
@@ -118,7 +99,7 @@ class Ticket < ActiveRecord::Base
       'tickets' => self.ticket_kind.eventbrite_ticket_id
     }
     for key in %w[app_key user_key event_id]
-      query[key] = SECRETS.eventbrite_data[key]
+      query[key] = Rails.application.secrets.eventbrite_data[key]
     end
 
     status, message = Eventbrite.request('access_code_new', query, method(:parse_discount_new_response))
@@ -145,7 +126,7 @@ class Ticket < ActiveRecord::Base
       'quantity_available' => '3',
     }
     for key in %w[app_key user_key event_id tickets]
-      query[key] = SECRETS.eventbrite_data[key]
+      query[key] = Rails.application.secrets.eventbrite_data[key]
     end
 
     status, message = Eventbrite.request('discount_new', query, method(:parse_discount_new_response))
@@ -157,7 +138,7 @@ class Ticket < ActiveRecord::Base
   end
 
   def valid_secrets?
-    if SECRETS.eventbrite_data['app_key'] == 'test'
+    if Rails.application.secrets.eventbrite_data['app_key'] == 'test'
       self.update_attribute :report, "Couldn't register Eventbrite code because no API key was defined in 'config/secrets.yml'"
       self.failed_to_register_code!
       logger.warn "Couldn't register Eventbrite code because no API key was defined in 'config/secrets.yml'"
@@ -186,7 +167,7 @@ class Ticket < ActiveRecord::Base
   def send_email
     self.sending_email!
     begin
-      Notifier.deliver_ticket(self)
+      ApplicationMailer.ticket_email(self).deliver_later
     rescue Exception => e
       # TODO catch specific exception?
       self.update_attribute :report, "Could not send email: #{e.class.name}, #{e.message}"

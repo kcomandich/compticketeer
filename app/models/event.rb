@@ -1,5 +1,4 @@
 class Event
-  
   attr_accessor :error
   attr_accessor :data
 
@@ -9,7 +8,7 @@ class Event
   end
 
   def self.eventbrite_tickets
-    SECRETS.eventbrite_data['ticket_list']
+    Rails.application.secrets.eventbrite_data['ticket_list']
   end
 
   def self.name_for_ticket(ticket_id)
@@ -27,21 +26,21 @@ class Event
   end
 
   def get_event
-    if SECRETS.eventbrite_data['app_key'] == 'test'
+    if Rails.application.secrets.eventbrite_data['app_key'] == 'test'
       @error = "Couldn't get Eventbrite event because no API key was defined in 'config/secrets.yml'"
       return false
     end
 
     query = {
-      'id' => SECRETS.eventbrite_data['event_id']
+      'id' => Rails.application.secrets.eventbrite_data['event_id']
     }
     for key in %w[app_key user_key]
-      query[key] = SECRETS.eventbrite_data[key]
+      query[key] = Rails.application.secrets.eventbrite_data[key]
     end
 
     return Eventbrite.request('event_get', query, method(:parse_event_get_response))
   end
-  
+
   def parse_event_get_response(res)
     answer = JSON.parse(res.body)
     if answer['error']
@@ -54,7 +53,7 @@ class Event
   end
 
   def self.events_list
-    SECRETS.eventbrite_data['event_list']
+    Rails.application.secrets.eventbrite_data['event_list']
   end
 
   def self.title(id)

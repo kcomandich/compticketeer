@@ -16,7 +16,7 @@
       <td>
         <%= link_to 'Show', ticket_kind_path(ticket_kind) %> |
         <%= link_to 'Edit', edit_ticket_kind_path(ticket_kind) %> |
-        <%= link_to 'Destroy', ticket_kind, :confirm => 'Are you sure?', :method => :delete %>
+        <%= link_to 'Destroy', ticket_kind, confirm: 'Are you sure?', method: :delete %>
       </td>
     </tr>
   <% end %>

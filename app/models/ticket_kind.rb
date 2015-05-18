@@ -1,34 +1,18 @@
-# == Schema Information
-# Schema version: 20100502225937
-#
-# Table name: ticket_kinds
-#
-#  id         :integer         not null, primary key
-#  title      :string(255)
-#  prefix     :string(255)
-#  template   :text
-#  created_at :datetime
-#  updated_at :datetime
-#  subject    :string(255)
-#  eventbrite_ticket_id :integer
-#  is_access_code :boolean
-#
-
 class TicketKind < ActiveRecord::Base
-  named_scope :ordered, :order => "lower(title) asc"
-  named_scope :access_kinds, :conditions => { :is_access_code => true }
-  named_scope :discount_kinds, :conditions => { :is_access_code => false }
+  scope :ordered, -> { order('lower(title) asc') }
+  scope :access_kinds, -> { where(is_access_code: true) }
+  scope :discount_kinds, -> { where(is_access_code: false) }
 
-  has_many :tickets, :dependent => :destroy
+  has_many :tickets, dependent: :destroy
 
   validates_presence_of :title
-  validates_length_of :title, :within => 1..128
+  validates_length_of :title, within: 1..128
   validates_presence_of :prefix
-  validates_length_of :prefix, :within => 1..20
+  validates_length_of :prefix, within: 1..20
   validates_presence_of :template
-  validates_length_of :template, :minimum => 1
+  validates_length_of :template, minimum: 1
   validates_presence_of :subject
-  validates_length_of :subject, :minimum => 1
+  validates_length_of :subject, minimum: 1
 
   # Override title to automatically set prefix if needed.
   def title=(value)

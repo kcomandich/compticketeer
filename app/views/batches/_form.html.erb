@@ -1,12 +1,18 @@
 <% form_for(batch) do |f| %>
-  <%= f.error_messages %>
+  <% if batch.errors.any? %>
+    <ul>
+      <% batch.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
 
   <h4>Type of ticket to send:</h4>
 
   <p>
     Access Code: <span class="label_note">reveal a hidden free ticket.</span>
   </p>
-  <% for kind in @access_ticket_kinds %>
+  <% @access_ticket_kinds.each do |kind| %>
     <%= f.radio_button :ticket_kind_id, kind.id %>
     <label for="batch_ticket_kind_id_<%= kind.id %>">
       <%= kind.title %>: <%= Event.name_for_ticket(kind.eventbrite_ticket_id) %> ticket
@@ -17,7 +23,7 @@
   <p>
     Discount Code: <span class="label_note">take 100% off the Regular ticket price.</span>
   </p>
-  <% for kind in @discount_ticket_kinds %>
+  <% @discount_ticket_kinds.each do |kind| %>
     <%= f.radio_button :ticket_kind_id, kind.id %>
     <label for="batch_ticket_kind_id_<%= kind.id %>">
       <%= kind.title %>
@@ -27,7 +33,7 @@
 
   <h4>Send tickets to these email addresses, one per line:</h4>
   <p>
-    <%= f.text_area :emails, :rows => 5 %>
+    <%= f.text_area :emails, rows: 5 %>
   </p>
 
   <p>

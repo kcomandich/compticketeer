@@ -10,7 +10,7 @@ Kind: <%= @batch.ticket_kind.title %>
     </tr>
   </thead>
   <tbody>
-    <% for ticket in @batch.tickets %>
+    <% @batch.tickets.each do |ticket| %>
       <tr>
         <td id="ticket_status_for_<%= ticket.id %>"><%= ticket.status_label %></td>
         <td><%= ticket.email %></td>

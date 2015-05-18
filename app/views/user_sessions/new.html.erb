@@ -1,7 +1,13 @@
 <% page_title "Login" %>
 
-<% form_for @user_session, :url => user_session_path do |f| %>
-  <%= f.error_messages %>
+<% form_for @user_session, url: user_session_path do |f| %>
+  <% if @user_session.errors.any? %>
+    <ul>
+      <% @user_session.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
   <%= f.label :login %><br />
   <%= f.text_field :login %><br />
   <br />

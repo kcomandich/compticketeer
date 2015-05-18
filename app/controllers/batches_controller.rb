@@ -1,30 +1,23 @@
 class BatchesController < ApplicationController
-  before_filter :assign_ticket_kinds_or_redirect, :only => [:new, :create, :index, :show]
-  before_filter :assign_event, :only => [:new]
+  before_filter :assign_ticket_kinds_or_redirect, only: [:new, :create, :index, :show]
+  before_filter :assign_event, only: [:new]
 
   # GET /batches
-  # GET /batches.xml
   def index
     @batches = Batch.ordered
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @batches }
-    end
   end
 
   # GET /batches/1
-  # GET /batches/1.xml
   def show
     @batch = Batch.find(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
       format.json do
-        render :json => @batch.to_json(
-          :methods => [:done?],
-          :include => {
-            :tickets => {:methods => [:status_label, :done?, :success?]}
+        render json: @batch.to_json(
+          methods: [:done?],
+          include: {
+            tickets: {methods: [:status_label, :done?, :success?]}
           }
         )
       end
@@ -32,45 +25,30 @@ class BatchesController < ApplicationController
   end
 
   # GET /batches/new
-  # GET /batches/new.xml
   def new
     @batch = Batch.new
     @eventname = @event.title
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @batch }
-    end
   end
 
   # POST /batches
-  # POST /batches.xml
   def create
-    @batch = Batch.new(params[:batch])
+    @batch = Batch.new(batch_params)
 
-    respond_to do |format|
-      if @batch.save
-        @batch.process_asynchronously
-        flash[:notice] = 'Batch was successfully created.'
-        format.html { redirect_to(@batch) }
-        format.xml  { render :xml => @batch, :status => :created, :location => @batch }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @batch.errors, :status => :unprocessable_entity }
-      end
+    if @batch.save
+      @batch.process_asynchronously
+      flash[:notice] = 'Batch was successfully created.'
+      redirect_to(@batch)
+    else
+      render action: "new"
     end
   end
 
   # DELETE /batches/1
-  # DELETE /batches/1.xml
   def destroy
     @batch = Batch.find(params[:id])
     @batch.destroy
 
-    respond_to do |format|
-      format.html { redirect_to(batches_path) }
-      format.xml  { head :ok }
-    end
+    redirect_to(batches_path)
   end
 
   protected
@@ -84,5 +62,11 @@ class BatchesController < ApplicationController
       @discount_ticket_kinds = TicketKind.discount_kinds.ordered
       @access_ticket_kinds = TicketKind.access_kinds.ordered
     end
+  end
+
+  private
+
+  def batch_params
+    params.require(:batch).permit(:emails, :ticket_kind_id, :created_at)
   end
 end

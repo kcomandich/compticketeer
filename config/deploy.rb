@@ -1,68 +1,62 @@
-#===[ Setup ]===========================================================
+# config valid only for current version of Capistrano
+lock '3.4.0'
 
-begin
-  require 'bundler/capistrano'
-rescue LoadError
-  puts <<-HERE
-    ERROR: You must install `bundler` on this computer to do deployments, e.g.:
-    % sudo gem install bundler
-  HERE
-end
+set :application, 'compticketeer'
+set :repo_url, 'git@github.com:osbridge/compticketeer.git'
 
-#===[ General settings ]================================================
+# Default branch is :master
+# ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
-set :application, "compticketeer"
-set :use_sudo, false
-ssh_options[:compression] = false
-default_run_options[:pty] = true
+# Default deploy_to directory is /var/www/my_app_name
+set :deploy_to, '/var/www/bridgepdx_compticketeer'
 
-#===[ Deploy tasks ]====================================================
+# Default value for :scm is :git
+# set :scm, :git
 
-# Restart for Phusion Passenger:
+# Default value for :format is :pretty
+# set :format, :pretty
+
+# Default value for :log_level is :debug
+# set :log_level, :debug
+
+# Default value for :pty is false
+# set :pty, true
+
+# Default value for :linked_files is []
+set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
+
+# Default value for linked_dirs is []
+set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', 'public/system')
+
+# Default value for default_env is {}
+# set :default_env, { path: "/opt/ruby/bin:$PATH" }
+
+# Default value for keep_releases is 5
+# set :keep_releases, 5
+
 namespace :deploy do
-  task :start do ; end
-  task :stop do ; end
-  task :restart, :roles => :app, :except => { :no_release => true } do
-    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
+
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+      # within release_path do
+      #   execute :rake, 'cache:clear'
+      # end
+    end
   end
-
-  desc "Upload configuration files"
-  task :configs, :roles => :app do
-    top.upload "config/database.yml", "#{shared_path}/config/database.yml"
-    top.upload "config/secrets.yml",  "#{shared_path}/config/secrets.yml"
-  end
-end
-
-desc "Symlink configuration files"
-task :symlink_configs, :roles => :app do
-  run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/"
-  run "ln -nfs #{shared_path}/config/secrets.yml  #{release_path}/config/"
-end
-
-# Callbacks:
-before 'deploy:finalize_update', :symlink_configs
-
-#===[ Database tasks ]==================================================
 
 namespace :db do
   desc "Download remote 'production' database and replace existing 'development' database with it."
-  task :use, :roles => :db, :only => {:primary => true} do
+  task use, :only => {:primary => true} do
+    on roles(:db)
     # NOTE: This assumes that both development and production are using SQLite3 databases.
-    source = "#{user}@#{host}:#{shared_path}/db/production.sqlite3"
+    source = "#{user}@#{server}:#{shared_path}/db/production.sqlite3"
     target = "db/development.sqlite3"
     backup = target + '.bak'
 
-    sh "cp -a #{target} #{backup}" if File.exist?(target)
-    sh "rsync -uvax #{source} #{target}"
+    execute "cp -a #{target} #{backup}" if File.exist?(target)
+    execute "rsync -uvax #{source} #{target}"
   end
 end
 
-#===[ Utilities ]=======================================================
-
-# Print the command and then execute it, just like Rake.
-def sh(command)
-  puts command
-  system command unless dry_run
 end
-
-#===[ fin ]=============================================================

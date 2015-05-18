@@ -1,20 +1,8 @@
-# == Schema Information
-# Schema version: 20100502225937
-#
-# Table name: batches
-#
-#  id             :integer         not null, primary key
-#  created_at     :datetime
-#  updated_at     :datetime
-#  emails         :text
-#  ticket_kind_id :integer
-#
-
 class Batch < ActiveRecord::Base
-  has_many :tickets, :dependent => :destroy
+  has_many :tickets, dependent: :destroy
   belongs_to :ticket_kind
 
-  named_scope :ordered, :order => 'created_at desc'
+  scope :ordered, -> { order('created_at asc') }
 
   validates_presence_of :ticket_kind_id
   validates_presence_of :emails
@@ -24,19 +12,19 @@ class Batch < ActiveRecord::Base
 
   # Process all tickets.
   def process
-    for ticket in tickets
-      ticket.process
-    end
+    tickets.each { |t| t.process }
   end
 
   # Process all tickets asynchronously.
   def process_asynchronously
-    spawn { self.process }
+    # TODO temporary fix until I can use ActiveJob when I upgrade to Rails 4.2
+    # Rails 2.3 code: spawn { self.process }
+    tickets.each { |t| t.process }
   end
 
   # Is processing on all the tickets done?
   def done?
-    for ticket in self.tickets
+    self.tickets.each do |ticket|
       return false unless ticket.done?
     end
     return true
@@ -46,14 +34,14 @@ class Batch < ActiveRecord::Base
 
   # Create the tickets associated with this batch.
   def create_tickets
-    for email in self.emails.split(/\s+/).map(&:strip)
+    self.emails.split(/\s+/).map(&:strip).each do |email|
       if ticket = self.tickets.detect {|ticket| ticket.email == email }
-        ticket.update_attributes(:ticket_kind => self.ticket_kind, :batch => self)
+        ticket.update_attributes(ticket_kind: self.ticket_kind, batch: self)
       else
-        ticket = Ticket.new(:email => email, :ticket_kind => self.ticket_kind, :batch => self, :event_id => SECRETS.eventbrite_data['event_id'])
+        ticket = Ticket.new(email: email, ticket_kind: self.ticket_kind, batch: self, event_id: Rails.application.secrets.eventbrite_data['event_id'])
         self.tickets << ticket
       end
-      Ticket.find_all_by_email_and_event_id(email, SECRETS.eventbrite_data['event_id']).each do |prev_ticket|
+      Ticket.where(email: email, event_id: Rails.application.secrets.eventbrite_data['event_id']).each do |prev_ticket|
         # TODO how to pass this message to controller/view
         logger.warn "Warning: This email [#{email}] already has a #{prev_ticket.ticket_kind.title.upcase} ticket code, emailed status = #{prev_ticket.status.to_s.upcase} for this event."
       end
@@ -66,10 +54,10 @@ class Batch < ActiveRecord::Base
     # the vague "Tickets is invalid" validation error with more useful messages
     # that explain what tickets had what errors.
     if self.errors[:tickets]
-      self.errors.instance_variable_get(:@errors).delete('tickets')
-      for ticket in self.tickets
+      self.instance_variable_get(:@errors).delete(:tickets)
+      self.tickets.each do |ticket|
         next if ticket.valid?
-        self.errors.add_to_base("Ticket with address '#{ticket.email}': " + ticket.errors.full_messages.join(', '))
+        self.errors.add(:base, "Ticket with address '#{ticket.email}': " + ticket.errors.full_messages.join(', '))
       end
     end
   end

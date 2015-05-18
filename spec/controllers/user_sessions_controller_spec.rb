@@ -1,10 +1,10 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe UserSessionsController do
 
   #Delete this example and add some real ones
-  it "should use UserSessionsController" do
-    controller.should be_an_instance_of(UserSessionsController)
+  it "expects to use UserSessionsController" do
+    expect(controller).to be_an_instance_of(UserSessionsController)
   end
 
 end

@@ -8,6 +8,6 @@ def login_as(user)
 end
 
 def login_as_admin
-  user = Factory :user
+  user = create(:user)
   login_as user
 end

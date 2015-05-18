@@ -1,21 +1,23 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe "/ticket_kinds/show.html.erb" do
   include TicketKindsHelper
   before(:each) do
-    assigns[:ticket_kind] = @ticket_kind = stub_model(TicketKind,
-      :title => "value for title",
-      :prefix => "value for prefix",
-      :template => "value for template"
-    )
-    assigns[:eventbrite_tickets] = @eventbrite_tickets = []
-    assigns[:event] = @event = Event.new
+    assign(:ticket_kind, @ticket_kind = TicketKind.create!(
+      title: "value for title",
+      prefix: "value for prefix",
+      subject: "value for subject",
+      template: "value for template"
+    ))
+    assign(:eventbrite_tickets, @eventbrite_tickets = [])
+    assign(:event, @event = Event.new)
   end
 
   it "renders attributes in <p>" do
     render
-    response.should have_text(/value\ for\ title/)
-    response.should have_text(/value\ for\ prefix/)
-    response.should have_text(/value\ for\ template/)
+    expect(rendered).to match /value\ for\ title/
+    expect(rendered).to match /value\ for\ prefix/
+    expect(rendered).to match /value\ for\ subject/
+    expect(rendered).to match /value\ for\ template/
   end
 end

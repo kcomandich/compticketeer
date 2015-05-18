@@ -1,9 +1,9 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe "/batches/show.html.erb" do
   include BatchesHelper
   before(:each) do
-    assigns[:batch] = @batch = Factory.stub(:batch)
+    assign(:batch, @batch = build_stubbed(:batch))
   end
 
   it "renders attributes in <p>" do

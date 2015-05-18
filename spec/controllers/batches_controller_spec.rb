@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe BatchesController do
 
@@ -14,89 +14,91 @@ describe BatchesController do
     it_should_behave_like "with or without ticket kinds"
 
     before :each do
-      @ticket_kinds = [Factory(:ticket_kind), Factory(:ticket_kind)]
+      @ticket_kinds = [create(:ticket_kind), create(:ticket_kind)]
     end
 
     describe "new" do
-      it "should display new batch form" do
+      it "expects to display new batch form" do
         get :new
-        response.should be_success
-        flash[:error].should be_blank
+        expect(response).to be_success
+        expect(flash[:error]).to be_blank
       end
     end
 
     describe "create" do
       before do
-        stub_notifier_secrets
+        stub_ticket_mailer_secrets
       end
 
-      it "should create batch when given valid params" do
-        lambda do
-          post :create, :batch => Factory.attributes_for(:batch, :ticket_kind => @ticket_kinds.first, :emails => "foo@bar.com\nbaz@qux.org")
-        end.should change(Ticket, :count).by(2)
+      it "expects to create batch when given valid params" do
+        expect(
+          lambda do
+            post :create, batch: {ticket_kind_id: @ticket_kinds.first.id, emails: "foo@bar.com\nbaz@qux.org"}
+          end
+        ).to change(Ticket, :count).by(2)
 
-        response.should redirect_to(batch_path(assigns[:batch].id))
-        assigns[:batch].should be_valid
-        flash[:error].should be_blank
+        expect(response).to redirect_to(batch_path(assigns[:batch].id))
+        expect(assigns[:batch]).to be_valid
+        expect(flash[:error]).to be_blank
 
         assigns[:batch].tickets.each do |ticket|
-          ticket.status.should == "sent_email"
+          expect(ticket.status).to == "sent_email"
         end
       end
 
-      it "should not create a batch when given invalid params"  do
-        attributes = Factory.attributes_for :batch, :ticket_kind => nil
-        post :create, :batch => attributes
+      it "expects to not create a batch when given invalid params"  do
+        attributes = attributes_for :batch, ticket_kind: nil
+        post :create, batch: attributes
 
-        response.should be_success
-        assigns[:batch].should_not be_valid
+        expect(response).to be_success
+        expect(assigns[:batch]).to_not be_valid
       end
     end
 
     describe "index" do
-      it "should list empty set" do
+      it "expects to list empty set" do
         Batch.destroy_all
         get :index
-        response.should be_success
+        expect(response).to be_success
         assigns[:batches] == []
       end
 
-      it "should list batches" do
-        batches = [Factory(:batch), Factory(:batch)]
+      it "expects to list batches" do
+        batches = [create(:batch), create(:batch)]
         get :index
-        response.should be_success
+        expect(response).to be_success
         assigns[:batches] == batches
       end
     end
 
     describe "show" do
-      it "should show batch" do
-        batch = Factory :batch
-        get :show, :id => batch.id
-        response.should be_success
+      it "expects to show batch" do
+        batch = create(:batch)
+        get :show, id: batch.id
+        expect(response).to be_success
         assigns[:batch] == batch
       end
 
       describe "for JSON" do
         before do
-          @batch = Factory :batch
+          @batch = create(:batch)
           @tickets = @batch.tickets
           @ticket = @tickets.first
-          get :show, :id => @batch.id, :format => "json"
+          get :show, id: @batch.id, format: "json"
           @data = response_json
         end
         
         describe "for batch" do
-          it "should include attributes" do
-            @data['batch']['ticket_kind_id'].should == @batch.ticket_kind_id
+          it "expects to include attributes" do
+            expect(@data['batch']['ticket_kind_id']).to == @batch.ticket_kind_id
           end
 
-          it "should include selected methods" do
-            @data['batch']['done?'].should == @batch.done?
+          it "expects to include selected methods" do
+            expect(@data['batch']['done?']).to == @batch.done?
           end
           
-          it "should not include unselected methods" do
-            @data['batch']['ticket_kind'].should be_nil
+          it "expects to not include unselected methods" do
+            expect(@data['batch']['ticket_kind']).to be_nil
           end
         end
 
@@ -106,28 +108,28 @@ describe BatchesController do
              @ticket = @batch.tickets.detect{ |ticket| ticket.id == @ticket_data['id'] }
           end
 
-          it "should include attributes" do
-            @ticket_data['status'].should == @ticket.status
+          it "expects to include attributes" do
+            expect(@ticket_data['status']).to == @ticket.status
           end
 
-          it "should include selected methods" do
-            @ticket_data['status_label'].should == @ticket.status_label
+          it "expects to include selected methods" do
+            expect(@ticket_data['status_label']).to == @ticket.status_label
           end
 
-          it "should not include unselected methods" do
-            @ticket_data['send_email'].should be_nil
+          it "expects to not include unselected methods" do
+            expect(@ticket_data['send_email']).to be_nil
           end
         end
       end
     end
 
     describe "destroy" do
-      it "should destroy batch" do
-        batch = Factory :batch
-        delete :destroy, :id => batch.id
-        response.should redirect_to(batches_path)
+      it "expects to destroy batch" do
+        batch = create(:batch)
+        delete :destroy, id: batch.id
+        expect(response).to redirect_to(batches_path)
         assigns[:batch] == batch
-        Batch.exists?(batch.id).should == false
+        expect(Batch.exists?(batch.id)).to == false
       end
     end
   end
@@ -136,26 +138,26 @@ describe BatchesController do
     it_should_behave_like "with or without ticket kinds"
 
     describe "new" do
-      it "should demand that ticket kinds be created first" do
+      it "expects to demand that ticket kinds be created first" do
         get :new
-        response.should redirect_to(new_ticket_kind_path)
-        flash[:error].should_not be_blank
+        expect(response).to redirect_to(new_ticket_kind_path)
+        expect(flash[:error]).to be_blank
       end
     end
 
     describe "create" do
-      it "should demand that ticket kinds be created first" do
-        post :create, :batch => Factory.attributes_for(:batch, :ticket_kind => nil)
-        response.should redirect_to(new_ticket_kind_path)
-        flash[:error].should_not be_blank
+      it "expects to demand that ticket kinds be created first" do
+        post :create, batch: {ticket_kind: nil}
+        expect(response).to redirect_to(new_ticket_kind_path)
+        expect(flash[:error]).to be_blank
       end
     end
 
     describe "index" do
-      it "should demand that ticket kinds be created first" do
+      it "expects to demand that ticket kinds be created first" do
         get :index
-        response.should redirect_to(new_ticket_kind_path)
-        flash[:error].should_not be_blank
+        expect(response).to redirect_to(new_ticket_kind_path)
+        expect(flash[:error]).to be_blank
       end
     end
   end
@@ -169,15 +171,15 @@ def mock_batch(stubs={})
     it "assigns all batches as @batches" do
       Batch.stub(:find).with(:all).and_return([mock_batch])
       get :index
-      assigns[:batches].should == [mock_batch]
+      expect(assigns[:batches]).to == [mock_batch]
     end
   end
 
   describe "GET show" do
     it "assigns the requested batch as @batch" do
       Batch.stub(:find).with("37").and_return(mock_batch)
-      get :show, :id => "37"
-      assigns[:batch].should equal(mock_batch)
+      get :show, id: "37"
+      expect(assigns[:batch]).to equal(mock_batch)
     end
   end
 
@@ -185,37 +187,37 @@ def mock_batch(stubs={})
     it "assigns a new batch as @batch" do
       Batch.stub(:new).and_return(mock_batch)
       get :new
-      assigns[:batch].should equal(mock_batch)
+      expect(assigns[:batch]).to equal(mock_batch)
     end
   end
 
   describe "GET edit" do
     it "assigns the requested batch as @batch" do
       Batch.stub(:find).with("37").and_return(mock_batch)
-      get :edit, :id => "37"
-      assigns[:batch].should equal(mock_batch)
+      get :edit, id: "37"
+      expect(assigns[:batch]).to equal(mock_batch)
     end
   end
 
   describe "POST create" do
 
-    it "should create a batch when given valid params" do
-      batch = Factory :batch
-      Batch.should_receive(:new).with(batch.attributes).and_return(batch)
-      batch.should_receive(:save).and_return(true)
+    it "expects to create a batch when given valid params" do
+      batch = create(:batch)
+      expect(Batch).to receive(:new).with(batch.attributes).and_return(batch)
+      expect(batch).to receive(:save).and_return(true)
 
-      post :create, :batch => batch.attributes
+      post :create, batch: batch.attributes
 
-      response.should redirect_to(batch_path batch)
-      assigns[:batch].should be_valid
+      expect(response).to redirect_to(batch_path batch)
+      expect(assigns[:batch]).to be_valid
     end
 
-    it "should not create a batch when given invalid params"  do
-      attributes = Factory.attributes_for :batch, :ticket_kind => nil
-      post :create, :batch => attributes
+    it "expects to not create a batch when given invalid params"  do
+      attributes = attributes_for :batch, ticket_kind: nil
+      post :create, batch: attributes
 
-      response.should be_success
-      assigns[:batch].should_not be_valid
+      expect(response).to be_success
+      expect(assigns[:batch]).to be_valid
     end
 
   end
@@ -224,41 +226,41 @@ def mock_batch(stubs={})
 
     describe "with valid params" do
       it "updates the requested batch" do
-        Batch.should_receive(:find).with("37").and_return(mock_batch)
-        mock_batch.should_receive(:update_attributes).with({'these' => 'params'})
-        put :update, :id => "37", :batch => {:these => 'params'}
+        expect(Batch).to receive(:find).with("37").and_return(mock_batch)
+        expect(mock_batch).to receive(:update_attributes).with({'these' => 'params'})
+        put :update, id: "37", batch: {these: 'params'}
       end
 
       it "assigns the requested batch as @batch" do
-        Batch.stub(:find).and_return(mock_batch(:update_attributes => true))
-        put :update, :id => "1"
-        assigns[:batch].should equal(mock_batch)
+        Batch.stub(:find).and_return(mock_batch(update_attributes: true))
+        put :update, id: "1"
+        expect(assigns[:batch]).to equal(mock_batch)
       end
 
       it "redirects to the batch" do
-        Batch.stub(:find).and_return(mock_batch(:update_attributes => true))
-        put :update, :id => "1"
-        response.should redirect_to(batch_url(mock_batch))
+        Batch.stub(:find).and_return(mock_batch(update_attributes: true))
+        put :update, id: "1"
+        expect(response).to redirect_to(batch_url(mock_batch))
       end
     end
 
     describe "with invalid params" do
       it "updates the requested batch" do
-        Batch.should_receive(:find).with("37").and_return(mock_batch)
-        mock_batch.should_receive(:update_attributes).with({'these' => 'params'})
-        put :update, :id => "37", :batch => {:these => 'params'}
+        expect(Batch).to receive(:find).with("37").and_return(mock_batch)
+        expect(mock_batch).to receive(:update_attributes).with({'these' => 'params'})
+        put :update, id: "37", batch: {these: 'params'}
       end
 
       it "assigns the batch as @batch" do
-        Batch.stub(:find).and_return(mock_batch(:update_attributes => false))
-        put :update, :id => "1"
-        assigns[:batch].should equal(mock_batch)
+        Batch.stub(:find).and_return(mock_batch(update_attributes: false))
+        put :update, id: "1"
+        expect(assigns[:batch]).to equal(mock_batch)
       end
 
       it "re-renders the 'edit' template" do
-        Batch.stub(:find).and_return(mock_batch(:update_attributes => false))
-        put :update, :id => "1"
-        response.should render_template('edit')
+        Batch.stub(:find).and_return(mock_batch(update_attributes: false))
+        put :update, id: "1"
+        expect(response).to render_template('edit')
       end
     end
 
@@ -266,15 +268,15 @@ def mock_batch(stubs={})
 
   describe "DELETE destroy" do
     it "destroys the requested batch" do
-      Batch.should_receive(:find).with("37").and_return(mock_batch)
-      mock_batch.should_receive(:destroy)
-      delete :destroy, :id => "37"
+      expect(Batch).to receive(:find).with("37").and_return(mock_batch)
+      expect(mock_batch).to receive(:destroy)
+      delete :destroy, id: "37"
     end
 
     it "redirects to the batches list" do
-      Batch.stub(:find).and_return(mock_batch(:destroy => true))
-      delete :destroy, :id => "1"
-      response.should redirect_to(batches_url)
+      Batch.stub(:find).and_return(mock_batch(destroy: true))
+      delete :destroy, id: "1"
+      expect(response).to redirect_to(batches_url)
     end
   end
 =end
