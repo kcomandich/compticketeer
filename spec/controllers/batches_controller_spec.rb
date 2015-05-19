@@ -42,6 +42,7 @@ describe BatchesController do
         expect(flash[:error]).to be_blank
 
         assigns[:batch].tickets.each do |ticket|
+          expect(ticket.report).to be_blank
           expect(ticket.status).to eq "sent_email"
         end
       end
@@ -87,24 +88,24 @@ describe BatchesController do
           get :show, id: @batch.id, format: "json"
           @data = response_json
         end
-        
+
         describe "for batch" do
           it "expects to include attributes" do
-            expect(@data['batch']['ticket_kind_id']).to eq @batch.ticket_kind_id
+            expect(@data['ticket_kind_id']).to eq @batch.ticket_kind_id
           end
 
           it "expects to include selected methods" do
-            expect(@data['batch']['done?']).to eq @batch.done?
+            expect(@data['done?']).to eq @batch.done?
           end
-          
+
           it "expects to not include unselected methods" do
-            expect(@data['batch']['ticket_kind']).to be_nil
+            expect(@data['ticket_kind']).to be_nil
           end
         end
 
         describe "for tickets" do
           before do
-             @ticket_data = @data['batch']['tickets'].first
+             @ticket_data = @data['tickets'].first
              @ticket = @batch.tickets.detect{ |ticket| ticket.id == @ticket_data['id'] }
           end
 
