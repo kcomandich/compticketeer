@@ -105,7 +105,7 @@ describe BatchesController do
         describe "for tickets" do
           before do
              @ticket_data = @data['batch']['tickets'].first
-             @ticket = @batch.tickets.detect{ |ticket| ticket.id eq @ticket_data['id'] }
+             @ticket = @batch.tickets.detect{ |ticket| ticket.id == @ticket_data['id'] }
           end
 
           it "expects to include attributes" do
@@ -141,7 +141,7 @@ describe BatchesController do
       it "expects to demand that ticket kinds be created first" do
         get :new
         expect(response).to redirect_to(new_ticket_kind_path)
-        expect(flash[:error]).to be_blank
+        expect(flash[:error]).to_not be_blank
       end
     end
 
@@ -149,7 +149,7 @@ describe BatchesController do
       it "expects to demand that ticket kinds be created first" do
         post :create, batch: {ticket_kind: nil}
         expect(response).to redirect_to(new_ticket_kind_path)
-        expect(flash[:error]).to be_blank
+        expect(flash[:error]).to_not be_blank
       end
     end
 
@@ -157,7 +157,7 @@ describe BatchesController do
       it "expects to demand that ticket kinds be created first" do
         get :index
         expect(response).to redirect_to(new_ticket_kind_path)
-        expect(flash[:error]).to be_blank
+        expect(flash[:error]).to_not be_blank
       end
     end
   end
