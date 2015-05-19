@@ -2,7 +2,7 @@ class ApplicationMailer < ActionMailer::Base
   default from: ENV['MAILER_FROM_ADDRESS']
 
   def self.configured?
-    hostname = ENV['MAILER_ADDRESS']
+    hostname = ENV['MAILER_SMTP_ADDRESS']
     return(hostname.present? && hostname != 'test')
   end
 
