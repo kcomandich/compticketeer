@@ -167,7 +167,7 @@ class Ticket < ActiveRecord::Base
   def send_email
     self.sending_email!
     begin
-      ApplicationMailer.ticket_email(self).deliver_later
+      ApplicationMailer.ticket_email(self).deliver # TODO use deliver_later when upgraded to Rails 4.2
     rescue Exception => e
       # TODO catch specific exception?
       self.update_attribute :report, "Could not send email: #{e.class.name}, #{e.message}"
