@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe Batch do
   it "expects to not create record and report error if emails are invalid" do
-    batch = build(:batch, :emails => "foo@bar.com\nomgwtfbbq\n\r\n")
+    batch = build(:batch, emails: "foo@bar.com\nomgwtfbbq\n\r\n")
 
     expect(batch).to_not be_valid
 
@@ -10,16 +10,15 @@ describe Batch do
     expect(batch.errors.full_messages.first).to match /omgwtfbbq/
   end
 
+  it "expects to create a new instance given valid attributes" do
+    kind = create(:ticket_kind)
+    attributes = attributes_for(:batch, ticket_kind_id: kind.id)
+    Batch.create!(attributes)
+  end
+
   describe "with valid arguments" do
     before do
-      @batch = create(:batch, :emails => "foo@bar.com\nbaz@qux.org")
-    end
-
-    it "expects to create a new instance given valid attributes" do
-      kind = create(:ticket_kind)
-      attributes = attributes_for(:batch, :ticket_kind => kind)
-
-      Batch.create!(attributes)
+      @batch = create(:batch, emails: "foo@bar.com\nbaz@qux.org")
     end
 
     it "expects to create associated tickets" do
