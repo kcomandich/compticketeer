@@ -11,8 +11,6 @@ describe "/batches/new.html.erb" do
 
   it "renders new batch form" do
     render
-
-    expect(response).to have_tag("form[action=?][method=post]", batches_path) do
-    end
+    expect(rendered).to have_selector("form[action='#{batches_path}'][method=post]")
   end
 end

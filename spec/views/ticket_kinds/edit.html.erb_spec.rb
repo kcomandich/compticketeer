@@ -4,22 +4,22 @@ describe "/ticket_kinds/edit.html.erb" do
   include TicketKindsHelper
 
   before(:each) do
-    assigns[:ticket_kind] = @ticket_kind = stub_model(TicketKind,
-      :new_record? => false,
-      :title => "value for title",
-      :prefix => "value for prefix",
-      :template => "value for template"
-    )
-    assigns[:eventbrite_tickets] = @eventbrite_tickets = []
+    assign(:ticket_kind, @ticket_kind = TicketKind.create!(
+      title: "value for title",
+      prefix: "value for prefix",
+      subject: "value for subject",
+      template: "value for template"
+    ))
+    assign(:eventbrite_tickets, @eventbrite_tickets = [])
   end
 
   it "renders the edit ticket_kind form" do
     render
 
-    expect(response).to have_tag("form[action=#{ticket_kind_path(@ticket_kind)}][method=post]") do
-      with_tag('input#ticket_kind_title[name=?]', "ticket_kind[title]")
-      with_tag('input#ticket_kind_prefix[name=?]', "ticket_kind[prefix]")
-      with_tag('textarea#ticket_kind_template[name=?]', "ticket_kind[template]")
+    expect(rendered).to have_selector("form[action='#{ticket_kind_path(@ticket_kind)}'][method=post]") do |node|
+      expect(node).to have_selector("input#ticket_kind_title[name='#{@ticket_kind[title]}']")
+      expect(node).to have_selector("input#ticket_kind_prefix[name='#{@ticket_kind[prefix]}']")
+      expect(node).to have_selector("textarea#ticket_kind_template[name='#{@ticket_kind[template]}']")
     end
   end
 end

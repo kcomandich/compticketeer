@@ -14,6 +14,6 @@ describe "/ticket_kinds/index.html.erb" do
 
   it "renders a list of ticket_kinds" do
     render
-    expect(response).to have_tag("tr>td", "value for title".to_s, 2)
+    expect(rendered).to have_selector("tr>td", count: 2, text: "value for title")
   end
 end

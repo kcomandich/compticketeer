@@ -10,7 +10,7 @@ describe "/tickets/show.html.erb" do
 
   it "renders attributes in <p>" do
     render
-    expect(response).to have_text(/#{@ticket.email}/)
-    expect(response).to have_text(/#{@ticket.report}/)
+    expect(rendered).to match /#{@ticket.email}/
+    expect(rendered).to match /#{@ticket.report}/
   end
 end

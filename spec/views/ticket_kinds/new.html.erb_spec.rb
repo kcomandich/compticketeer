@@ -16,13 +16,10 @@ describe "/ticket_kinds/new.html.erb" do
   it "renders new ticket_kind form" do
     render
 
-    expect(view).to render_template(partial: "_form")
-    expect(rendered).to have_selector("form[action=?][method=post]", ticket_kinds_path)
-# TODO
-#    do |node|
-#      expect(node).to have_selector("input#ticket_kind_title[name=?]", "ticket_kind[title]")
-#      expect(node).to have_selector("input#ticket_kind_prefix[name=?]", "ticket_kind[prefix]")
-#      expect(node).to have_selector("textarea#ticket_kind_template[name=?]", "ticket_kind[template]")
-#    end
+    expect(rendered).to have_selector("form[action='#{ticket_kinds_path}'][method=post]" ) do |node|
+      expect(node).to have_selector("input#ticket_kind_title[name='#{@ticket_kind[title]}']")
+      expect(node).to have_selector("input#ticket_kind_prefix[name='#{@ticket_kind[prefix]}']")
+      expect(node).to have_selector("textarea#ticket_kind_template[name='#{@ticket_kind[template]}']")
+    end
   end
 end
