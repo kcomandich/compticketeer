@@ -1,4 +1,4 @@
-<% form_for(@ticket_kind) do |f| %>
+<%= form_for(@ticket_kind) do |f| %>
   <% if @ticket_kind.errors.any? %>
     <ul>
       <% @ticket_kind.errors.full_messages.each do |msg| %>

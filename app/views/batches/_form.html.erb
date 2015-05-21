@@ -1,4 +1,4 @@
-<% form_for(batch) do |f| %>
+<%= form_for(batch) do |f| %>
   <% if batch.errors.any? %>
     <ul>
       <% batch.errors.full_messages.each do |msg| %>
