@@ -12,5 +12,6 @@ describe "/batches/index.html.erb" do
 
   it "renders a list of batches" do
     render
+    expect(rendered).to have_selector("tr>td", count: 6)
   end
 end
