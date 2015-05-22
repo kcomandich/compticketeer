@@ -153,14 +153,6 @@ describe BatchesController do
         expect(flash[:error]).to_not be_blank
       end
     end
-
-    describe "index" do
-      it "expects to demand that ticket kinds be created first" do
-        get :index
-        expect(response).to redirect_to(new_ticket_kind_path)
-        expect(flash[:error]).to_not be_blank
-      end
-    end
   end
 
 =begin
