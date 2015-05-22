@@ -23,13 +23,13 @@ gem 'spring',        group: :development
 
 gem 'capistrano-rails', group: :development
 
-# Use debugger
-# gem 'debugger', group: [:development, :test]
-
-gem 'rspec-rails',  '~> 3.0', :require => false, :groups => ['development', 'test']
-gem 'factory_girl_rails', '~> 4.0', :require => false, :groups => ['development', 'test']
-gem 'database_cleaner', '~> 1.4.0', :require => false, :groups => ['development', 'test']
-gem 'capybara', '~> 2.4.0', :require => false, :groups => ['development', 'test']
+group :development, :test do
+  gem 'rspec-rails',  '~> 3.0', :require => false
+  gem 'factory_girl_rails', '~> 4.0', :require => false
+  gem 'database_cleaner', '~> 1.4.0', :require => false
+  gem 'capybara', '~> 2.4.0', :require => false
+# gem 'debugger'
+end
 
 gem 'authlogic', '~> 3.0'
 gem 'aasm', '~> 4.1.0'
