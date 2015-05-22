@@ -1,5 +1,4 @@
 class TicketsController < ApplicationController
-  before_filter :assign_event, only: [:index]
 
   # GET /tickets
   def index
