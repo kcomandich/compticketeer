@@ -192,14 +192,6 @@ def mock_batch(stubs={})
     end
   end
 
-  describe "GET edit" do
-    it "assigns the requested batch as @batch" do
-      Batch.stub(:find).with("37").and_return(mock_batch)
-      get :edit, id: "37"
-      expect(assigns[:batch]).to equal(mock_batch)
-    end
-  end
-
   describe "POST create" do
 
     it "expects to create a batch when given valid params" do
@@ -219,50 +211,6 @@ def mock_batch(stubs={})
 
       expect(response).to be_success
       expect(assigns[:batch]).to be_valid
-    end
-
-  end
-
-  describe "PUT update" do
-
-    describe "with valid params" do
-      it "updates the requested batch" do
-        expect(Batch).to receive(:find).with("37").and_return(mock_batch)
-        expect(mock_batch).to receive(:update_attributes).with({'these' => 'params'})
-        put :update, id: "37", batch: {these: 'params'}
-      end
-
-      it "assigns the requested batch as @batch" do
-        Batch.stub(:find).and_return(mock_batch(update_attributes: true))
-        put :update, id: "1"
-        expect(assigns[:batch]).to equal(mock_batch)
-      end
-
-      it "redirects to the batch" do
-        Batch.stub(:find).and_return(mock_batch(update_attributes: true))
-        put :update, id: "1"
-        expect(response).to redirect_to(batch_url(mock_batch))
-      end
-    end
-
-    describe "with invalid params" do
-      it "updates the requested batch" do
-        expect(Batch).to receive(:find).with("37").and_return(mock_batch)
-        expect(mock_batch).to receive(:update_attributes).with({'these' => 'params'})
-        put :update, id: "37", batch: {these: 'params'}
-      end
-
-      it "assigns the batch as @batch" do
-        Batch.stub(:find).and_return(mock_batch(update_attributes: false))
-        put :update, id: "1"
-        expect(assigns[:batch]).to equal(mock_batch)
-      end
-
-      it "re-renders the 'edit' template" do
-        Batch.stub(:find).and_return(mock_batch(update_attributes: false))
-        put :update, id: "1"
-        expect(response).to render_template('edit')
-      end
     end
 
   end

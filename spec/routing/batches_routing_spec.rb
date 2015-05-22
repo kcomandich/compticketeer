@@ -14,16 +14,8 @@ describe BatchesController do
       expect({ :get => "/batches/1" }).to route_to(:controller => "batches", :action => "show", :id => "1")
     end
 
-    it "recognizes and generates #edit" do
-      expect({ :get => "/batches/1/edit" }).to route_to(:controller => "batches", :action => "edit", :id => "1")
-    end
-
     it "recognizes and generates #create" do
       expect({ :post => "/batches" }).to route_to(:controller => "batches", :action => "create") 
-    end
-
-    it "recognizes and generates #update" do
-      expect({ :put => "/batches/1" }).to route_to(:controller => "batches", :action => "update", :id => "1") 
     end
 
     it "recognizes and generates #destroy" do

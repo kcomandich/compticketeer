@@ -1,11 +1,11 @@
 Rails.application.routes.draw do
   root 'batches#new'
 
-  resources :tickets
+  resources :tickets, only: [:index, :show]
   resources :ticket_kinds
-  resources :batches
+  resources :batches, only: [:index, :show, :new, :create, :destroy]
 
-  resource :user_session
+  resource :user_session, only: [:new, :create, :destroy]
   get 'login', to: 'user_sessions#new', as: :login
   get 'logout', to: 'user_sessions#destroy', as: :logout
   resource :config, only: [:show]
