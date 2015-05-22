@@ -55,5 +55,15 @@ class ApplicationController < ActionController::Base
   def assign_event
     @event = Event.new
     @event.get_event
+    if @event.error
+      flash[:error] = @event.error
+    end
+  end
+
+  def assign_event_or_redirect
+    assign_event
+    if flash[:error]
+      redirect_to config_url
+    end
   end
 end

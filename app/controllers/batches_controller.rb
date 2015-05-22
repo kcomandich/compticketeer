@@ -1,6 +1,6 @@
 class BatchesController < ApplicationController
   before_filter :assign_ticket_kinds_or_redirect, only: [:new, :create, :index, :show]
-  before_filter :assign_event, only: [:new]
+  before_filter :assign_event_or_redirect, only: [:new]
 
   # GET /batches
   def index
