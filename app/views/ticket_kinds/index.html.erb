@@ -10,8 +10,8 @@
 
   <% @ticket_kinds.each do |ticket_kind| %>
     <tr>
-      <td><%=h ticket_kind.title %></td>
-      <td><%=h ticket_kind.prefix %></td>
+      <td><%= ticket_kind.title %></td>
+      <td><%= ticket_kind.prefix %></td>
       <td><%= ticket_kind.is_access_code ? "yes: #{Event.name_for_ticket(ticket_kind.eventbrite_ticket_id)} ticket" : "no" %></td>
       <td>
         <%= link_to 'Show', ticket_kind_path(ticket_kind) %> |

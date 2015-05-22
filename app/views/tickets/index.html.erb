@@ -11,19 +11,19 @@
 
 <% @tickets.each do |ticket| %>
   <tr>
-    <td><%=h ticket.batch_id %></td>
-    <td><%=h Event.title(ticket.event_id) if ticket.event_id %></td>
+    <td><%= ticket.batch_id %></td>
+    <td><%= Event.title(ticket.event_id) if ticket.event_id %></td>
     <td class="nowrap">
-      <%=h ticket.status_label %><br />
+      <%= ticket.status_label %><br />
       <br />
       <%= link_to 'Show Ticket', ticket %>
     </td>
     <td>
-      <%=h ticket.ticket_kind.title %><br />
-      <%=h ticket.email %><br />
-      <%=h ticket.discount_code %><%= " &nbsp;<span class='label_note'>access code</span>" if ticket.ticket_kind.is_access_code %><br />
+      <%= ticket.ticket_kind.title %><br />
+      <%= ticket.email %><br />
+      <%= ticket.discount_code %><%= " &nbsp;<span class='label_note'>access code</span>" if ticket.ticket_kind.is_access_code %><br />
     </td>
-    <td><%=h ticket.report %></td>
+    <td><%= ticket.report %></td>
   </tr>
 <% end %>
 </table>
