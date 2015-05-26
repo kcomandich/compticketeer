@@ -37,6 +37,7 @@ describe TicketKindsController do
 
   describe "new" do
     it "expects to display form" do
+      stub_eventbrite_event_get
       get :new
       expect(response).to be_success
       expect(flash[:error]).to be_blank
@@ -63,6 +64,7 @@ describe TicketKindsController do
     it "expects to succeed" do
       create_record
       get :show, :id => @record.id
+      stub_eventbrite_event_get
       expect(response).to be_success
       expect(assigns[:ticket_kind]).to eq @record
     end
@@ -72,6 +74,7 @@ describe TicketKindsController do
     it "expects to succeed" do
       create_record
       get :edit, :id => @record.id
+      stub_eventbrite_event_get
       expect(response).to be_success
       expect(assigns[:ticket_kind]).to eq @record
     end

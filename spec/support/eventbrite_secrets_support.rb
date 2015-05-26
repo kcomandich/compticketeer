@@ -17,3 +17,12 @@ def stub_invalid_eventbrite_secrets
     'tickets'  => 'test',
   })
 end
+
+# Stub successful event_get call to Eventbrite API
+def stub_eventbrite_event_get
+  mock_event = { title: 'test', tickets: [ ticket: { id: '1234', name: 'test', price: '0.00', visible:false }]}
+  mock_body = { process: { id: 268329, message: 'event_get : Complete', status: 'OK'}, event: mock_event }
+  res = Net::HTTPOK.new('1.1', '200', 'Yay!')
+  allow(res).to receive_messages(body: mock_body.to_json)
+  expect(Net::HTTP).to receive(:post_form).and_return(res)
+end

@@ -19,6 +19,7 @@ describe BatchesController do
 
     describe "new" do
       it "expects to display new batch form" do
+        stub_eventbrite_event_get
         get :new
         expect(response).to be_success
         expect(flash[:error]).to be_blank
