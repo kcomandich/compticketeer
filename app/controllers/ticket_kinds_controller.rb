@@ -1,5 +1,6 @@
 class TicketKindsController < ApplicationController
   before_filter :assign_event_or_redirect, only: [:new, :edit, :show]
+  before_filter :assign_tickets_or_redirect, only: [:new, :edit, :show]
 
   # GET /ticket_kinds
   def index
@@ -9,19 +10,16 @@ class TicketKindsController < ApplicationController
   # GET /ticket_kinds/1
   def show
     @ticket_kind = TicketKind.find(params[:id])
-    @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
   end
 
   # GET /ticket_kinds/new
   def new
     @ticket_kind = TicketKind.new
-    @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
   end
 
   # GET /ticket_kinds/1/edit
   def edit
     @ticket_kind = TicketKind.find(params[:id])
-    @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
   end
 
   # POST /ticket_kinds
