@@ -47,14 +47,14 @@ describe TicketKindsController do
   describe "create" do
     it "expects to succeed when given valid attributes" do
       attributes = attributes_for(:ticket_kind)
-      post :create, :ticket_kind => attributes
+      post :create, ticket_kind: attributes
       expect(response).to redirect_to(ticket_kind_path(assigns[:ticket_kind]))
       expect(assigns[:ticket_kind]).to be_valid
     end
 
     it "expects to fail when given invalid attributes" do
-      attributes = attributes_for(:ticket_kind, :title => nil)
-      post :create, :ticket_kind => attributes
+      attributes = attributes_for(:ticket_kind, title: nil)
+      post :create, ticket_kind: attributes
       expect(response).to be_success
       expect(assigns[:ticket_kind]).to_not be_valid
     end
@@ -63,8 +63,8 @@ describe TicketKindsController do
   describe "show" do
     it "expects to succeed" do
       create_record
-      get :show, :id => @record.id
       stub_eventbrite_event_get
+      get :show, id: @record.id
       expect(response).to be_success
       expect(assigns[:ticket_kind]).to eq @record
     end
@@ -73,8 +73,8 @@ describe TicketKindsController do
   describe "edit" do
     it "expects to succeed" do
       create_record
-      get :edit, :id => @record.id
       stub_eventbrite_event_get
+      get :edit, id: @record.id
       expect(response).to be_success
       expect(assigns[:ticket_kind]).to eq @record
     end
@@ -83,14 +83,14 @@ describe TicketKindsController do
   describe "update" do
     it "expects to succeed with valid attributes" do
       create_record
-      put :update, :id => @record.id, :ticket_kind => @record.attributes
+      put :update, id: @record.id, ticket_kind: @record.attributes
       expect(response).to redirect_to(ticket_kind_path(@record))
       expect(assigns[:ticket_kind]).to eq @record
     end
 
     it "expects to fail with invalid attributes" do
       create_record
-      put :update, :id => @record.id, :ticket_kind => { :title => nil }
+      put :update, id: @record.id, ticket_kind: { title: nil }
       expect(response).to be_success
       expect(assigns[:ticket_kind]).to eq @record
       expect(assigns[:ticket_kind].errors.full_messages.first).to match /title can't be blank/i
@@ -100,7 +100,7 @@ describe TicketKindsController do
   describe "destroy" do
     it "expects to succeed" do
       create_record
-      delete :destroy, :id => @record.id
+      delete :destroy, id: @record.id
       expect(response).to redirect_to(ticket_kinds_path)
       expect(TicketKind.exists?(@record.id)).to be_falsey
     end

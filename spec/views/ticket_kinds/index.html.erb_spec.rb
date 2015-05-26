@@ -5,8 +5,8 @@ describe "/ticket_kinds/index.html.erb" do
 
   before(:each) do
     assign(:ticket_kinds, [
-      create(:ticket_kind, :title => "value for title", :prefix => "value for prefix", :template => "value for template"),
-      create(:ticket_kind, :title => "value for title", :prefix => "value for prefix", :template => "value for template"),
+      create(:ticket_kind, title: "value for title", prefix: "value for prefix", template: "value for template"),
+      create(:ticket_kind, title: "value for title", prefix: "value for prefix", template: "value for template"),
     ])
     assign(:eventbrite_tickets, @eventbrite_tickets = [])
     assign(:event, @event = Event.new)

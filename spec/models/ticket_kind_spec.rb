@@ -10,11 +10,11 @@ describe TicketKind do
   end
 
   it "expects to set the prefix correctly" do
-    expect(create(:ticket_kind, :title => 'Volunteer').prefix).to eq 'volunteer'
+    expect(create(:ticket_kind, title: 'Volunteer').prefix).to eq 'volunteer'
   end
 
   it "expects to not set prefix if no title is set" do
-    kind = build(:ticket_kind, :title => nil, :prefix => nil)
+    kind = build(:ticket_kind, title: nil, prefix: nil)
     expect(kind).to_not receive(:prefix=)
     kind.set_prefix
   end

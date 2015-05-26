@@ -21,7 +21,7 @@ describe TicketsController do
   describe "GET show" do
     it "assigns the requested ticket as @ticket" do
       allow(Ticket).to receive(:find).with("37").and_return(mock_ticket)
-      get :show, :id => "37"
+      get :show, id: "37"
       expect(assigns[:ticket]).to equal(mock_ticket)
     end
   end

@@ -5,7 +5,7 @@ describe "/tickets/index.html.erb" do
 
   before(:each) do
     assign(:tickets, [
-      create(:ticket, :email => "foo@bar.com"),
+      create(:ticket, email: "foo@bar.com"),
     ])
   end
 

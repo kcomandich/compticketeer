@@ -8,7 +8,7 @@ describe ApplicationMailer do
   end
 
   it "expects to not send ticket if ApplicationMailer is not configured" do
-    allow(ApplicationMailer).to receive_messages(:configured? => false)
+    allow(ApplicationMailer).to receive_messages(configured?: false)
 
     expect(lambda { ApplicationMailer.ticket_email(@ticket).deliver }).to raise_error(ArgumentError) # TODO use deliver_later when upgraded to Rails 4.2
   end
