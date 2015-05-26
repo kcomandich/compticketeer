@@ -8,7 +8,7 @@ describe ConfigsController do
 
   describe "with invalid configuration" do
     it "expects to display errors" do
-      stub_invalid_eventbrite_secrets
+      stub_invalid_eventbrite_config
       get :show
       expect(flash[:error]).to_not be_blank
     end

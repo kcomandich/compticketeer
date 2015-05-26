@@ -131,7 +131,7 @@ describe Ticket do
 
     it "expects to register" do
       allow(Ticket).to receive_messages(disable_register_code: false)
-      stub_eventbrite_secrets
+      stub_eventbrite_config
 
       res = Net::HTTPOK.new('1.1', '200', 'Yay!')
       allow(res).to receive_messages(body: {process: {id: 268329, message: 'discount_new : Complete', status: 'OK'}}.to_json)
@@ -144,7 +144,7 @@ describe Ticket do
 
     it "expects to succeed if discount code already exists" do
       allow(Ticket).to receive_messages(disable_register_code: false)
-      stub_eventbrite_secrets
+      stub_eventbrite_config
 
       res = Net::HTTPOK.new('1.1', '200', 'Yay!')
       allow(res).to receive_messages(body: {error: {error_message: 'The discount code "volunteer_foo" is already in use.', error_type: 'Discount error'}}.to_json)
@@ -159,7 +159,7 @@ describe Ticket do
 
     it "expects to fail if EventBrite responds with an API error" do
       allow(Ticket).to receive_messages(disable_register_code: false)
-      stub_eventbrite_secrets
+      stub_eventbrite_config
 
       res = Net::HTTPOK.new('1.1', '200', 'Yay!')
       allow(res).to receive_messages(body: {error: {error_message: 'Please enter a valid discount code.', error_type: 'Discount error'}}.to_json)
@@ -173,7 +173,7 @@ describe Ticket do
 
     it "expects to fail if EventBrite responds with invalid JSON" do
       allow(Ticket).to receive_messages(disable_register_code: false)
-      stub_eventbrite_secrets
+      stub_eventbrite_config
 
       res = Net::HTTPOK.new('1.1', '200', 'Yay!')
       allow(res).to receive_messages(body: 'invalid/json')
@@ -187,7 +187,7 @@ describe Ticket do
 
     it "expects to fail if EventBrite rejects request" do
       allow(Ticket).to receive_messages(disable_register_code: false)
-      stub_eventbrite_secrets
+      stub_eventbrite_config
 
       res = Net::HTTPForbidden.new('1.1', '401', 'Go away!')
       allow(res).to receive_messages(body: 'Get off my lawn!')
@@ -199,15 +199,15 @@ describe Ticket do
       expect(ticket.status).to eq "failed_to_register_code"
     end
 
-    it "expects to fail if Rails.application.secrets haven't been configured" do
+    it "expects to fail if Rails.application.config.eventbrite hasn't been configured" do
       allow(Ticket).to receive_messages(disable_register_code: false)
-      stub_invalid_eventbrite_secrets
+      stub_invalid_eventbrite_config
 
       expect(Net::HTTP).to_not receive(:post_form)
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey
-      expect(ticket.report).to match /.+secrets\.yml.+/
+      expect(ticket.report).to match /.+eventbrite\.rb.+/
       expect(ticket.status).to eq "failed_to_register_code"
     end
   end

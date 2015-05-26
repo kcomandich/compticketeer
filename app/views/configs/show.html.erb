@@ -2,7 +2,7 @@
 
   <% if flash.present? %>
     <h4>Configuration Error</h4>
-    <p>If there is a problem connecting to Eventbrite, check your config/secrets.yml file, and your ENV variables.</p>
+    <p>If there is a problem connecting to Eventbrite, check your config/initializers/eventbrite.rb file, and your ENV variables.</p>
   <% else %>
     <h4>Configuration looks good.</h4>
   <% end %>

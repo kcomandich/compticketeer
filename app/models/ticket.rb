@@ -126,7 +126,7 @@ class Ticket < ActiveRecord::Base
       'quantity_available' => '3',
     }
     for key in %w[app_key user_key event_id tickets]
-      query[key] = Rails.application.secrets.eventbrite_data[key]
+      query[key] = Rails.application.config.eventbrite[key]
     end
 
     status, message = Eventbrite.request('discount_new', query, method(:parse_discount_new_response))
@@ -138,10 +138,10 @@ class Ticket < ActiveRecord::Base
   end
 
   def valid_secrets?
-    if Rails.application.secrets.eventbrite_data['app_key'] == 'test'
-      self.update_attribute :report, "Couldn't register Eventbrite code because no API key was defined in 'config/secrets.yml'"
+    unless Rails.application.config.eventbrite[:app_key]
+      self.update_attribute :report, "Couldn't register Eventbrite code because no API key was defined in 'config/initializers/eventbrite.rb'"
       self.failed_to_register_code!
-      logger.warn "Couldn't register Eventbrite code because no API key was defined in 'config/secrets.yml'"
+      logger.warn "Couldn't register Eventbrite code because no API key was defined in 'config/initializers/eventbrite.rb'"
       return false
     end
     return true

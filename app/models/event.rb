@@ -8,7 +8,7 @@ class Event
   end
 
   def self.eventbrite_tickets
-    Rails.application.secrets.eventbrite_data['ticket_list']
+    Rails.application.config.eventbrite[:ticket_list]
   end
 
   def self.name_for_ticket(ticket_id)
@@ -26,16 +26,16 @@ class Event
   end
 
   def get_event
-    if Rails.application.secrets.eventbrite_data['app_key'] == 'test'
-      @error = "Couldn't get Eventbrite event because no API key was defined in 'config/secrets.yml'"
+    if Rails.application.config.eventbrite[:app_key] == 'test'
+      @error = "Couldn't get Eventbrite event because no API key was defined in 'config/initializers/eventbrite.rb'"
       return false
     end
 
     query = {
-      'id' => Rails.application.secrets.eventbrite_data['event_id']
+      'id' => Rails.application.config.eventbrite[:event_id]
     }
     for key in %w[app_key user_key]
-      query[key] = Rails.application.secrets.eventbrite_data[key]
+      query[key] = Rails.application.config.eventbrite[key]
     end
 
     return Eventbrite.request('event_get', query, method(:parse_event_get_response))
@@ -53,7 +53,7 @@ class Event
   end
 
   def self.events_list
-    Rails.application.secrets.eventbrite_data['event_list']
+    Rails.application.config.eventbrite[:event_list]
   end
 
   def self.title(id)
