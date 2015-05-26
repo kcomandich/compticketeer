@@ -79,7 +79,9 @@ class Ticket < ActiveRecord::Base
   # Process this ticket and return the status.
   def process
     self.ticket_kind.is_access_code ? self.register_access_code : self.register_discount_code
-    self.send_email
+    if self.registered_code?
+      self.send_email
+    end
     return self.status
   end
 

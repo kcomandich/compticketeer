@@ -112,10 +112,24 @@ describe Ticket do
         stub_ticket_mailer_secrets
       end
 
-    it "expects to register code and send email" do
+    it "expects to register code" do
       ticket = create(:ticket)
       expect(ticket).to receive(:register_discount_code)
+      ticket.process
+    end
+
+    it "expects to send email" do
+      ticket = create(:ticket)
+      # register_discount_code will set ticket.status to 'registered_code' during tests, allowing send_email to be called
       expect(ticket).to receive(:send_email)
+      ticket.process
+    end
+
+    it "expects to not send email if code isn't registered" do
+      ticket = create(:ticket)
+      # stubbing register_discount_code will not change ticket.status, so send_email will not be called
+      expect(ticket).to receive(:register_discount_code)
+      expect(ticket).to_not receive(:send_email)
       ticket.process
     end
   end
