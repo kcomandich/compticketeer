@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20150526025011) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "batches", force: true do |t|
     t.text     "emails"
     t.integer  "ticket_kind_id"
@@ -22,10 +25,10 @@ ActiveRecord::Schema.define(version: 20150526025011) do
 
   create_table "events", force: true do |t|
     t.text    "title"
-    t.integer "eventbrite_event_id"
+    t.integer "eventbrite_event_id", limit: 8
   end
 
-  add_index "events", ["eventbrite_event_id"], name: "index_events_on_eventbrite_event_id", unique: true
+  add_index "events", ["eventbrite_event_id"], name: "index_events_on_eventbrite_event_id", unique: true, using: :btree
 
   create_table "ticket_kinds", force: true do |t|
     t.string   "title"
@@ -42,7 +45,7 @@ ActiveRecord::Schema.define(version: 20150526025011) do
     t.integer  "ticket_kind_id"
     t.integer  "batch_id"
     t.string   "email"
-    t.text     "report",         limit: 2048
+    t.text     "report"
     t.datetime "processed_at"
     t.string   "discount_code"
     t.string   "status"
