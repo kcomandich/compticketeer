@@ -1,8 +1,9 @@
 class Eventbrite
-
+  @url = Rails.application.config.eventbrite[:url]
+  @eventbrite_event_id = Rails.application.config.eventbrite[:event_id]
 
   def self.get_event
-    @event = Event.find_or_create_by(eventbrite_event_id: Rails.application.config.eventbrite[:event_id])
+    @event = Event.find_or_create_by(eventbrite_event_id: @eventbrite_event_id)
     unless Rails.application.config.eventbrite[:oauth_token]
       @event.error = "Couldn't get Eventbrite event because no OAuth token was defined in 'config/initializers/eventbrite.rb'"
       return @event
@@ -14,14 +15,12 @@ class Eventbrite
   end
 
   def self.get_event_details
-    url = Rails.application.config.eventbrite[:url]
-    id = Rails.application.config.eventbrite[:event_id]
     headers = {
       Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
       content_type: :json
     }
     begin
-      response = RestClient.get("#{url}/events/#{id}", headers)
+      response = RestClient.get("#{@url}/events/#{@eventbrite_event_id}", headers)
     rescue RestClient::ExceptionWithResponse => e
       if response_code = e.http_code and response_body = e.http_body
         begin
@@ -41,8 +40,6 @@ class Eventbrite
   end
 
   def self.new_access_code(code, ticket_id)
-    url = Rails.application.config.eventbrite[:url]
-    id = Rails.application.config.eventbrite[:event_id]
     headers = {
       Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
       content_type: :json
@@ -55,7 +52,7 @@ class Eventbrite
       }
     }
     begin
-      response = RestClient.post("#{url}/events/#{id}/access_codes/", query.to_json, headers)
+      response = RestClient.post("#{@url}/events/#{@eventbrite_event_id}/access_codes/", query.to_json, headers)
     rescue RestClient::ExceptionWithResponse => e
       if response_code = e.http_code and response_body = e.http_body
         begin
@@ -72,8 +69,6 @@ class Eventbrite
   end
 
   def self.new_discount_code(code, ticket_id)
-    url = Rails.application.config.eventbrite[:url]
-    id = Rails.application.config.eventbrite[:event_id]
     headers = {
       Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
       content_type: :json
@@ -87,7 +82,7 @@ class Eventbrite
       }
     }
     begin
-      response = RestClient.post("#{url}/events/#{id}/discounts/", query.to_json, headers)
+      response = RestClient.post("#{@url}/events/#{@eventbrite_event_id}/discounts/", query.to_json, headers)
     rescue RestClient::ExceptionWithResponse => e
       if response_code = e.http_code and response_body = e.http_body
         begin
