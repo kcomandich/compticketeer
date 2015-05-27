@@ -1,6 +1,10 @@
 class Eventbrite
   @url = Rails.application.config.eventbrite[:url]
   @eventbrite_event_id = Rails.application.config.eventbrite[:event_id]
+  @headers = {
+    Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
+    content_type: :json
+  }
 
   def self.get_event
     @event = Event.find_or_create_by(eventbrite_event_id: @eventbrite_event_id)
@@ -15,12 +19,8 @@ class Eventbrite
   end
 
   def self.get_event_details
-    headers = {
-      Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
-      content_type: :json
-    }
     begin
-      response = RestClient.get("#{@url}/events/#{@eventbrite_event_id}", headers)
+      response = RestClient.get("#{@url}/events/#{@eventbrite_event_id}", @headers)
     rescue RestClient::ExceptionWithResponse => e
       if response_code = e.http_code and response_body = e.http_body
         begin
@@ -40,10 +40,6 @@ class Eventbrite
   end
 
   def self.new_access_code(code, ticket_id)
-    headers = {
-      Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
-      content_type: :json
-    }
     query = {
       access_code: {
         code: code,
@@ -52,7 +48,7 @@ class Eventbrite
       }
     }
     begin
-      response = RestClient.post("#{@url}/events/#{@eventbrite_event_id}/access_codes/", query.to_json, headers)
+      response = RestClient.post("#{@url}/events/#{@eventbrite_event_id}/access_codes/", query.to_json, @headers)
     rescue RestClient::ExceptionWithResponse => e
       if response_code = e.http_code and response_body = e.http_body
         begin
@@ -69,10 +65,6 @@ class Eventbrite
   end
 
   def self.new_discount_code(code, ticket_id)
-    headers = {
-      Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
-      content_type: :json
-    }
     query = {
       discount: {
         code: code,
@@ -82,7 +74,7 @@ class Eventbrite
       }
     }
     begin
-      response = RestClient.post("#{@url}/events/#{@eventbrite_event_id}/discounts/", query.to_json, headers)
+      response = RestClient.post("#{@url}/events/#{@eventbrite_event_id}/discounts/", query.to_json, @headers)
     rescue RestClient::ExceptionWithResponse => e
       if response_code = e.http_code and response_body = e.http_body
         begin
