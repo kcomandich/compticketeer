@@ -137,7 +137,7 @@ describe Ticket do
   describe "register_discount_code" do
     it "expects to not register during tests unless overridden" do
       ticket = create(:ticket)
-      expect(Net::HTTP).to_not receive(:post_form)
+      expect(RestClient).to_not receive(:post)
 
       expect(Ticket.disable_register_code).to be_truthy
       expect(ticket.register_discount_code).to be_falsey
@@ -147,9 +147,10 @@ describe Ticket do
       allow(Ticket).to receive_messages(disable_register_code: false)
       stub_eventbrite_config
 
-      res = Net::HTTPOK.new('1.1', '200', 'Yay!')
+      response = double('net http response', to_hash: {"Status" => ["200 OK"]}, code: 200)
+      res = RestClient::Response.create('Yay!', response, {}, {})
       allow(res).to receive_messages(body: {process: {id: 268329, message: 'discount_new : Complete', status: 'OK'}}.to_json)
-      expect(Net::HTTP).to receive(:post_form).and_return(res)
+      expect(RestClient).to receive(:post).and_return(res)
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_truthy
@@ -160,9 +161,10 @@ describe Ticket do
       allow(Ticket).to receive_messages(disable_register_code: false)
       stub_eventbrite_config
 
-      res = Net::HTTPOK.new('1.1', '200', 'Yay!')
+      response = double('net http response', to_hash: {"Status" => ["200 OK"]}, code: 200)
+      res = RestClient::Response.create('Yay!', response, {}, {})
       allow(res).to receive_messages(body: {error: {error_message: 'The discount code "volunteer_foo" is already in use.', error_type: 'Discount error'}}.to_json)
-      expect(Net::HTTP).to receive(:post_form).and_return(res)
+      expect(RestClient).to receive(:post).and_return(res)
 
       ticket = create(:ticket)
 
@@ -175,9 +177,10 @@ describe Ticket do
       allow(Ticket).to receive_messages(disable_register_code: false)
       stub_eventbrite_config
 
-      res = Net::HTTPOK.new('1.1', '200', 'Yay!')
+      response = double('net http response', to_hash: {"Status" => ["200 OK"]}, code: 200)
+      res = RestClient::Response.create('Yay!', response, {}, {})
       allow(res).to receive_messages(body: {error: {error_message: 'Please enter a valid discount code.', error_type: 'Discount error'}}.to_json)
-      expect(Net::HTTP).to receive(:post_form).and_return(res)
+      expect(RestClient).to receive(:post).and_return(res)
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey
@@ -189,9 +192,10 @@ describe Ticket do
       allow(Ticket).to receive_messages(disable_register_code: false)
       stub_eventbrite_config
 
-      res = Net::HTTPOK.new('1.1', '200', 'Yay!')
+      response = double('net http response', to_hash: {"Status" => ["200 OK"]}, code: 200)
+      res = RestClient::Response.create('Yay!', response, {}, {})
       allow(res).to receive_messages(body: 'invalid/json')
-      expect(Net::HTTP).to receive(:post_form).and_return(res)
+      expect(RestClient).to receive(:post).and_return(res)
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey
@@ -203,13 +207,13 @@ describe Ticket do
       allow(Ticket).to receive_messages(disable_register_code: false)
       stub_eventbrite_config
 
-      res = Net::HTTPForbidden.new('1.1', '401', 'Go away!')
-      allow(res).to receive_messages(body: 'Get off my lawn!')
-      expect(Net::HTTP).to receive(:post_form).and_return(res)
+      res = RestClient::Unauthorized.new
+      allow(res).to receive_messages(http_body: 'Get off my lawn!', http_code: 401)
+      expect(RestClient).to receive(:post).and_raise(res)
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey
-      expect(ticket.report).to match /401.+Get off my lawn/
+      expect(ticket.report).to match /Get off my lawn.+401/
       expect(ticket.status).to eq "failed_to_register_code"
     end
 
@@ -217,7 +221,7 @@ describe Ticket do
       allow(Ticket).to receive_messages(disable_register_code: false)
       stub_invalid_eventbrite_config
 
-      expect(Net::HTTP).to_not receive(:post_form)
+      expect(RestClient).to_not receive(:post)
       ticket = create(:ticket)
 
       expect(ticket.register_discount_code).to be_falsey

@@ -33,6 +33,7 @@ end
 
 gem 'authlogic', '~> 3.0'
 gem 'aasm', '~> 4.1.0'
+gem 'rest-client', '~> 1.8.0'
 
 group :production do
   gem 'exception_notification'

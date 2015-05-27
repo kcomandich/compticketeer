@@ -96,15 +96,13 @@ class Ticket < ActiveRecord::Base
     return false unless valid_secrets?
 
     query = {
-      'code' => self.discount_code,
-      'quantity_available' => '3',
-      'tickets' => self.ticket_kind.eventbrite_ticket_id
+      access_code: {
+        code: self.discount_code,
+        quantity_available: 3,
+        ticket_ids: [self.ticket_kind.eventbrite_ticket_id]
+      }
     }
-    for key in %w[app_key user_key event_id]
-      query[key] = Rails.application.secrets.eventbrite_data[key]
-    end
-
-    status, message = Eventbrite.request('access_code_new', query, method(:parse_discount_new_response))
+    status, message =  Eventbrite.access_code_new(query, method(:parse_discount_new_response))
 
     status ? self.registered_code! : self.failed_to_register_code!
     self.update_attribute :report, message
@@ -123,15 +121,15 @@ class Ticket < ActiveRecord::Base
     return false unless valid_secrets?
 
     query = {
-      'code' => self.discount_code,
-      'percent_off' => '100',
-      'quantity_available' => '3',
+      discount: {
+        code: self.discount_code,
+        percent_off: 100,
+        quantity_available: 3,
+        ticket_ids: [self.ticket_kind.eventbrite_ticket_id]
+      }
     }
-    for key in %w[app_key user_key event_id tickets]
-      query[key] = Rails.application.config.eventbrite[key]
-    end
 
-    status, message = Eventbrite.request('discount_new', query, method(:parse_discount_new_response))
+    status, message = Eventbrite.discounts_new(query, method(:parse_discount_new_response))
 
     status ? self.registered_code! : self.failed_to_register_code!
     self.update_attribute :report, message
@@ -140,10 +138,10 @@ class Ticket < ActiveRecord::Base
   end
 
   def valid_secrets?
-    unless Rails.application.config.eventbrite[:app_key]
-      self.update_attribute :report, "Couldn't register Eventbrite code because no API key was defined in 'config/initializers/eventbrite.rb'"
+    unless Rails.application.config.eventbrite[:oauth_token]
+      self.update_attribute :report, "Couldn't register Eventbrite code because no OAuth token was defined in 'config/initializers/eventbrite.rb'"
       self.failed_to_register_code!
-      logger.warn "Couldn't register Eventbrite code because no API key was defined in 'config/initializers/eventbrite.rb'"
+      logger.warn "Couldn't register Eventbrite code because no OAuth token was defined in 'config/initializers/eventbrite.rb'"
       return false
     end
     return true

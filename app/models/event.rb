@@ -21,24 +21,22 @@ class Event
 
   def eventbrite_free_hidden_tickets
     return @error unless @data
-    tickets = @data['tickets'].map{ |t| t['ticket'] if (t['ticket']['price'] == "0.00" and t['ticket']['visible'] == "false") }.compact
+    tickets = @data['ticket_classes'].map{ |t| t if (t['free'] == true and t['hidden'] == true) }.compact
     tickets.sort{|a,b| a['name'] <=> b['name']}
   end
 
   def get_event
-    if Rails.application.config.eventbrite[:app_key] == 'test'
-      @error = "Couldn't get Eventbrite event because no API key was defined in 'config/initializers/eventbrite.rb'"
+    unless Rails.application.config.eventbrite[:oauth_token]
+      @error = "Couldn't get Eventbrite event because no OAuth token was defined in 'config/initializers/eventbrite.rb'"
       return false
     end
 
     query = {
-      'id' => Rails.application.config.eventbrite[:event_id]
+      id: Rails.application.config.eventbrite[:event_id],
+      Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
+      content_type: :json
     }
-    for key in %w[app_key user_key]
-      query[key] = Rails.application.config.eventbrite[key]
-    end
-
-    return Eventbrite.request('event_get', query, method(:parse_event_get_response))
+    return Eventbrite.event_get(query, method(:parse_event_get_response))
   end
 
   def parse_event_get_response(res)
