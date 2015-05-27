@@ -96,15 +96,7 @@ class Ticket < ActiveRecord::Base
 
     return false unless valid_secrets?
 
-    query = {
-      access_code: {
-        code: self.discount_code,
-        quantity_available: 3,
-        ticket_ids: [self.ticket_kind.eventbrite_ticket_id]
-      }
-    }
-    status, message =  Eventbrite.access_code_new(query, method(:parse_discount_new_response))
-
+    status, message = Eventbrite.new_access_code(self.discount_code, self.ticket_kind.eventbrite_ticket_id)
     status ? self.registered_code! : self.failed_to_register_code!
     self.update_attribute :report, message
 
@@ -121,17 +113,7 @@ class Ticket < ActiveRecord::Base
 
     return false unless valid_secrets?
 
-    query = {
-      discount: {
-        code: self.discount_code,
-        percent_off: 100,
-        quantity_available: 3,
-        ticket_ids: [self.ticket_kind.eventbrite_ticket_id]
-      }
-    }
-
-    status, message = Eventbrite.discounts_new(query, method(:parse_discount_new_response))
-
+    status, message = Eventbrite.new_discount_code(self.discount_code, self.ticket_kind.eventbrite_ticket_id)
     status ? self.registered_code! : self.failed_to_register_code!
     self.update_attribute :report, message
 
@@ -146,22 +128,6 @@ class Ticket < ActiveRecord::Base
       return false
     end
     return true
-  end
-
-  def parse_discount_new_response(res)
-    answer = JSON.parse(res.body)
-    if answer['error']
-      if answer['error'].try(:[], 'error_message').to_s =~ /already in use/
-        # Ticket exists succeeded
-        return true, "Eventbrite code already exists: #{res.body}"
-      else
-        # Has error of some other kind
-        return false, "Could not register Eventbrite code: #{res.body}"
-      end
-    else
-      # Registration succeeded
-      return true, "Registered Eventbrite code: #{res.body}"
-    end
   end
 
   # Send email for this ticket.
@@ -182,5 +148,4 @@ class Ticket < ActiveRecord::Base
   def fill_email_template
     return self.ticket_kind.template.gsub(/%CODE%/i, self.discount_code)
   end
-
 end

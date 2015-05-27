@@ -22,34 +22,6 @@ class Event < ActiveRecord::Base
     tickets.sort{|a,b| a['name'] <=> b['name']}
   end
 
-  def get_event
-    unless Rails.application.config.eventbrite[:oauth_token]
-      @error = "Couldn't get Eventbrite event because no OAuth token was defined in 'config/initializers/eventbrite.rb'"
-      return false
-    end
-
-    query = {
-      id: Rails.application.config.eventbrite[:event_id],
-      Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
-      content_type: :json
-    }
-    success, error = Eventbrite.event_get(query, method(:parse_event_get_response))
-    title = @data['name']['text']
-    save
-    return [success, error]
-  end
-
-  def parse_event_get_response(res)
-    answer = JSON.parse(res.body)
-    if answer['error']
-      @error = "Could not get Eventbrite event: #{res.body}"
-      return false
-    else
-      @data = answer['event']
-      return true
-    end
-  end
-
   def self.title(id)
     return '' unless id
     e = self.where(eventbrite_event_id: id).first
