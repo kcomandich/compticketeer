@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby '2.2.0'
+
 gem 'rails', '4.1.8'
 gem 'pg'
 gem 'sass-rails', '~> 4.0.3'
@@ -18,8 +20,7 @@ gem 'spring',        group: :development
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
-# Use unicorn as the app server
-# gem 'unicorn'
+gem 'puma'
 
 gem 'capistrano-rails', group: :development
 
@@ -37,4 +38,5 @@ gem 'rest-client', '~> 1.8.0'
 
 group :production do
   gem 'exception_notification'
+  gem 'rails_12factor'
 end
