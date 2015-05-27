@@ -6,37 +6,16 @@ class Eventbrite
     content_type: :json
   }
 
-  def self.get_event
+  def self.get_event_details
     @event = Event.find_or_create_by(eventbrite_event_id: @eventbrite_event_id)
     unless Rails.application.config.eventbrite[:oauth_token]
       @event.error = "Couldn't get Eventbrite event because no OAuth token was defined in 'config/initializers/eventbrite.rb'"
       return @event
     end
 
-    self.get_event_details
-    @event.update_attribute :title, @event.data['name']['text']
+    status, @event.error = eventbrite_request(RestClient.method(:get), method(:parse_event_get_response), "#{@url}/events/#{@eventbrite_event_id}")
+    @event.update_attribute :title, @event.data['name']['text'] if status
     return @event
-  end
-
-  def self.get_event_details
-    begin
-      response = RestClient.get("#{@url}/events/#{@eventbrite_event_id}", @headers)
-    rescue RestClient::ExceptionWithResponse => e
-      if response_code = e.http_code and response_body = e.http_body
-        begin
-          error = JSON.parse(response_body)
-          @event.error = "Eventbrite request failed, got HTTP status #{response_code}: #{error}"
-          return false
-        rescue JSON::ParserError
-          @event.error = "Could not parse Eventbrite JSON response: #{response_body.inspect} (HTTP response code was #{response_code})"
-          return false
-        end
-      end
-      @event.error = "Eventbrite request failed: #{e.response}"
-      return false
-    end
-
-    return parse_event_get_response(response)
   end
 
   def self.new_access_code(code, ticket_id)
@@ -47,21 +26,7 @@ class Eventbrite
         ticket_ids: [ticket_id]
       }
     }
-    begin
-      response = RestClient.post("#{@url}/events/#{@eventbrite_event_id}/access_codes/", query.to_json, @headers)
-    rescue RestClient::ExceptionWithResponse => e
-      if response_code = e.http_code and response_body = e.http_body
-        begin
-          error = JSON.parse(response_body)
-          return false, "Eventbrite request failed, got HTTP status #{response_code}: #{error}"
-        rescue JSON::ParserError
-          return false, "Could not parse Eventbrite JSON response: #{response_body.inspect} (HTTP response code was #{response_code})"
-        end
-      end
-      return false, "Eventbrite request failed: #{e.response}"
-    end
-
-    return parse_code_new_response(response)
+    return eventbrite_request(RestClient.method(:post), method(:parse_code_new_response), "#{@url}/events/#{@eventbrite_event_id}/access_codes/", query.to_json)
   end
 
   def self.new_discount_code(code, ticket_id)
@@ -73,8 +38,14 @@ class Eventbrite
         ticket_ids: [ticket_id],
       }
     }
+    return eventbrite_request(RestClient.method(:post), method(:parse_code_new_response), "#{@url}/events/#{@eventbrite_event_id}/discounts/", query.to_json)
+  end
+
+  private
+
+  def self.eventbrite_request(request_method, parse_method, *request_args)
     begin
-      response = RestClient.post("#{@url}/events/#{@eventbrite_event_id}/discounts/", query.to_json, @headers)
+      response = request_method.call(*request_args, @headers)
     rescue RestClient::ExceptionWithResponse => e
       if response_code = e.http_code and response_body = e.http_body
         begin
@@ -87,23 +58,19 @@ class Eventbrite
       return false, "Eventbrite request failed: #{e.response}"
     end
 
-    return parse_code_new_response(response)
+    return parse_method.call(response)
   end
-
-  private
 
   def self.parse_event_get_response(res)
     begin
       answer = JSON.parse(res.body)
     rescue JSON::ParserError => e
-      @event.error = "Could not parse Eventbrite JSON response: #{res.body}"
-      return false
+      return false, "Could not parse Eventbrite JSON response: #{res.body}"
     end
     if answer['error']
-      @event.error = "Could not get Eventbrite event: #{res.body}"
-      return false
+      return false, "Could not get Eventbrite event: #{res.body}"
     else
-      @event.data = answer['event']
+      @event.update_attribute :data, answer
       return true
     end
   end

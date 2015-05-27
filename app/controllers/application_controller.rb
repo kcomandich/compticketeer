@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
 
   # Set @event variable
   def assign_event
-    @event = Eventbrite.get_event
+    @event = Eventbrite.get_event_details
     if @event.error
       flash[:error] = @event.error
     end
