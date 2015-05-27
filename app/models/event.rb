@@ -1,11 +1,7 @@
-class Event
+class Event < ActiveRecord::Base
   attr_accessor :error
   attr_accessor :data
-
-  def title
-    return @error unless @data
-    @data['title']
-  end
+  has_many :tickets
 
   def self.eventbrite_tickets
     Rails.application.config.eventbrite[:ticket_list]
@@ -36,7 +32,10 @@ class Event
       Authorization: "Bearer #{Rails.application.config.eventbrite[:oauth_token]}",
       content_type: :json
     }
-    return Eventbrite.event_get(query, method(:parse_event_get_response))
+    success, error = Eventbrite.event_get(query, method(:parse_event_get_response))
+    title = @data['name']['text']
+    save
+    return [success, error]
   end
 
   def parse_event_get_response(res)
@@ -50,14 +49,10 @@ class Event
     end
   end
 
-  def self.events_list
-    Rails.application.config.eventbrite[:event_list]
-  end
-
   def self.title(id)
     return '' unless id
-    events_list.keys.each do |e_id|
-      return events_list[e_id] if id == e_id
-    end
+    e = self.where(eventbrite_event_id: id).first
+    return "Event ID #{id}" unless e
+    e.title
   end
 end

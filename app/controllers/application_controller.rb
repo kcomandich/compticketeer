@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
 
   # Set @event variable
   def assign_event
-    @event = Event.new
+    @event = Event.find_or_create_by(eventbrite_event_id: Rails.application.config.eventbrite[:event_id])
     @event.get_event
     if @event.error
       flash[:error] = @event.error

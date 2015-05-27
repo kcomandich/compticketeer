@@ -12,7 +12,7 @@
 <% @tickets.each do |ticket| %>
   <tr>
     <td><%= ticket.batch_id %></td>
-    <td><%= Event.title(ticket.event_id) if ticket.event_id %></td>
+    <td><%= ticket.event.title %></td>
     <td class="nowrap">
       <%= ticket.status_label %><br />
       <br />

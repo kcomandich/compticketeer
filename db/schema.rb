@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150514032235) do
+ActiveRecord::Schema.define(version: 20150526025011) do
 
   create_table "batches", force: true do |t|
     t.text     "emails"
@@ -19,6 +19,13 @@ ActiveRecord::Schema.define(version: 20150514032235) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "events", force: true do |t|
+    t.text    "title"
+    t.integer "eventbrite_event_id"
+  end
+
+  add_index "events", ["eventbrite_event_id"], name: "index_events_on_eventbrite_event_id", unique: true
 
   create_table "ticket_kinds", force: true do |t|
     t.string   "title"

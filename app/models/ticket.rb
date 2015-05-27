@@ -1,6 +1,7 @@
 class Ticket < ActiveRecord::Base
   belongs_to :batch
   belongs_to :ticket_kind
+  belongs_to :event
 
   scope :ordered, -> { order('created_at desc').includes(:ticket_kind) }
 

@@ -11,8 +11,13 @@ FactoryGirl.define do
     created_at Time.now
   end
 
+  factory :event do
+    sequence(:title) { |n| "event_#{n}"}
+  end
+
   factory :ticket do
     batch
+    event
     sequence(:email) { |n| "ticket_#{n}@provider.com"}
     report nil
     processed_at Time.now
