@@ -6,11 +6,5 @@ Rails.application.configure do
     event_id: ENV['EVENTBRITE_EVENT_ID'],
     # Identifier of the type of ticket in your Eventbrite event:
     tickets: 'test',
-
-    # Identifiers of all tickets compticketeer has been used for:
-    # (keep these here instead of using Eventbrite's API repeatedly to call event_get).
-    ticket_list: {
-      '33333333' => '2015 Speaker'
-    },
   }
 end

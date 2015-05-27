@@ -3,21 +3,22 @@ class Event < ActiveRecord::Base
   attr_accessor :data
   has_many :tickets
 
+  # tickets for the current event
   def self.eventbrite_tickets
-    Rails.application.config.eventbrite[:ticket_list]
+    return [] unless @data
+    @data['ticket_classes']
   end
 
-  def self.name_for_ticket(ticket_id)
-    return '' unless ticket_id
-    eventbrite_tickets.keys.each do |e_id|
-      return eventbrite_tickets[e_id] if ticket_id == e_id
+  def self.name_for_ticket(eventbrite_ticket_id)
+    return '' unless eventbrite_ticket_id
+    eventbrite_tickets.each do |ticket|
+      return ticket.name if eventbrite_ticket_id == ticket.id
     end
     return "[Error: current event doesn't contain this ticket. Assign new ticket.]"
   end
 
   def eventbrite_free_hidden_tickets
-    return @error unless @data
-    tickets = @data['ticket_classes'].map{ |t| t if (t['free'] == true and t['hidden'] == true) }.compact
+    tickets = Event.eventbrite_tickets.map{ |t| t if (t['free'] == true and t['hidden'] == true) }.compact
     tickets.sort{|a,b| a['name'] <=> b['name']}
   end
 
