@@ -97,7 +97,7 @@ Rails.application.configure do
   config.middleware.use ExceptionNotification::Rack,
     email: {
       sender_address: %{"error@#{Socket.gethostname}"},
-      subject_prepend: "[compticketeer ERROR] "
+      subject_prepend: "[compticketeer ERROR] ",
       exception_recipients: Rails.application.secrets.administrator_email,
       smtp_settings: config.action_mailer.smtp_settings
     }
