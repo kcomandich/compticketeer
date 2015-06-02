@@ -72,8 +72,10 @@ table td {
     font-style: italic;
 }
 
-#access {
+.callout {
   background : #eee;
   padding : 5px 10px 10px 20px;
+}
+#access {
   width : 300px;
 }

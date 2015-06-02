@@ -21,7 +21,7 @@
     </span>
   </p>
 
-  <div id="access" style="<%= 'display:none' unless @ticket_kind.is_access_code %>" >
+  <div id="access" class="callout" style="<%= 'display:none' unless @ticket_kind.is_access_code %>" >
     Eventbrite ticket to give access to:
     <% @eventbrite_tickets.each do |eticket| %>
       <br/>
