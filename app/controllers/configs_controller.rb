@@ -3,5 +3,7 @@ class ConfigsController < ApplicationController
 
   # GET /config
   def show
+    @eb_config = Rails.application.config.eventbrite
+    @mail_config = Rails.application.config.action_mailer.smtp_settings
   end
 end

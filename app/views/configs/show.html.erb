@@ -6,3 +6,74 @@
   <% else %>
     <h4>Configuration looks good.</h4>
   <% end %>
+
+  <h4>Eventbrite Data</h4>
+  <table>
+    <tr>
+      <td>Eventbrite event</td>
+      <td><%= @event.title %></td>
+    </tr>
+    <tr>
+      <td>Free Ticket classes</td>
+      <td><%= @event.eventbrite_free_hidden_tickets.map{ |t| t['name'] } %></td>
+    </tr>
+    <tr>
+      <td>Paid Ticket classes</td>
+      <td><%= @event.eventbrite_paid_tickets.map{ |t| t['name'] } %></td>
+    </tr>
+  </table>
+
+  <h4><a href="#" onclick="$('#event_data').toggle();">View Full Event data</a></h4>
+  <div id="event_data" class="callout" style="display:none"><%= @event.data %></div>
+
+  <h4>Eventbrite Config</h4>
+  <table>
+    <tr>
+      <td colspan="2"><strong>Set in ENV variables and config/initializers/eventbrite.rb</strong></td>
+    </tr>
+    <% @eb_config.keys.each do |key| %>
+      <tr>
+        <td><%= key %></td>
+        <% case key %>
+        <% when :oauth_token %>
+          <td><%= '*' * @eb_config[key].length %></td>
+        <% when :event_id %>
+          <td><a target="_blank" href="http://www.eventbrite.com/discounts?eid=<%= @eb_config[key] %>"><%= @eb_config[key] %></a></td>
+        <% else %>
+          <td><%= @eb_config[key] %></td>
+        <% end %>
+      </tr>
+    <% end %>
+    <tr>
+      <td colspan="2"><strong>Set in ENV variables and config/secrets.yml</strong></td>
+    </tr>
+    <tr>
+      <td>discount_code_salt</td>
+      <td><%= '*' * Rails.application.secrets.discount_code_salt.length %></td>
+    </tr>
+  </table>
+
+  <h4>Mailer Config</h4>
+  <table>
+    <tr>
+      <td colspan="2"><strong>Set in ENV variables and config/environments/*.rb</strong></td>
+    </tr>
+    <% @mail_config.keys.each do |key| %>
+      <tr>
+        <td><%= key %></td>
+        <% case key %>
+        <% when :password, :user_name %>
+          <td><%= '*' * @mail_config[key].length %></td>
+        <% else %>
+          <td><%= @mail_config[key] %></td>
+        <% end %>
+      </tr>
+    <% end %>
+    <tr>
+      <td colspan="2"><strong>Set in ENV variables and config/secrets.yml</strong></td>
+    </tr>
+    <tr>
+      <td>administrator_email</td>
+      <td><%= Rails.application.secrets.administrator_email %></td>
+    </tr>
+  </table>
