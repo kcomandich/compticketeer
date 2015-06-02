@@ -29,7 +29,7 @@
         <td><%= key %></td>
         <% case key %>
         <% when :oauth_token %>
-          <td><%= '*' * @eb_config[key].length %></td>
+          <td><%= hide_secret(@eb_config[key]) %></td>
         <% when :event_id %>
           <td><a target="_blank" href="http://www.eventbrite.com/discounts?eid=<%= @eb_config[key] %>"><%= @eb_config[key] %></a></td>
         <% else %>
@@ -42,7 +42,7 @@
     </tr>
     <tr>
       <td>discount_code_salt</td>
-      <td><%= '*' * Rails.application.secrets.discount_code_salt.length %></td>
+      <td><%= hide_secret(Rails.application.secrets.discount_code_salt) %></td>
     </tr>
   </table>
 
@@ -56,7 +56,7 @@
         <td><%= key %></td>
         <% case key %>
         <% when :password, :user_name %>
-          <td><%= '*' * @mail_config[key].length %></td>
+          <td><%= hide_secret(@mail_config[key]) %></td>
         <% else %>
           <td><%= @mail_config[key] %></td>
         <% end %>
