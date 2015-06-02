@@ -15,7 +15,7 @@
   <% @access_ticket_kinds.each do |kind| %>
     <%= f.radio_button :ticket_kind_id, kind.id %>
     <label for="batch_ticket_kind_id_<%= kind.id %>">
-      <%= kind.title %>: <%= Event.name_for_ticket(kind.eventbrite_ticket_id) %> ticket
+      <%= kind.title %>: <%= @event.name_for_ticket(kind.eventbrite_ticket_id) %> ticket
     </label>
     <br/>
   <% end %>

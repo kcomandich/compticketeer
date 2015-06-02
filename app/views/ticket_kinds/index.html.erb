@@ -5,6 +5,7 @@
     <th>Title</th>
     <th>Prefix</th>
     <th>Access Code?</th>
+    <th>Eventbrite Ticket Class</th>
     <th>Manage</th>
   </tr>
 
@@ -12,7 +13,8 @@
     <tr>
       <td><%= ticket_kind.title %></td>
       <td><%= ticket_kind.prefix %></td>
-      <td><%= ticket_kind.is_access_code ? "yes: #{Event.name_for_ticket(ticket_kind.eventbrite_ticket_id)} ticket" : "no" %></td>
+      <td><%= ticket_kind.is_access_code ? "yes" : "no" %></td>
+      <td><%= "#{@event.name_for_ticket(ticket_kind.eventbrite_ticket_id)} ticket" %></td>
       <td>
         <%= link_to 'Show', ticket_kind_path(ticket_kind) %> |
         <%= link_to 'Edit', edit_ticket_kind_path(ticket_kind) %> |
@@ -23,8 +25,8 @@
 </table>
 
 <p class="label_note">
-  Use an Access code to reveal a hidden free ticket.<br>
-  Otherwise it will be a Discount code: a more generic code that makes the Regular ticket free.
+  Use an Access Code to reveal a hidden free ticket.<br>
+  Use a Discount Code to give a 100% discount on a paid ticket.
 </p>
 <br />
 

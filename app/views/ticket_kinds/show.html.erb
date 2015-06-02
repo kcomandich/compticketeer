@@ -7,16 +7,11 @@
 
 <p>
   <b>Access Code?</b>
-<% if @ticket_kind.is_access_code %>
-  yes
+  <%= @ticket_kind.is_access_code ? 'yes' : 'no' %>
 </p>
 <p>
   <b>Eventbrite ticket to give access to:</b>
-  <%= Event.name_for_ticket(@ticket_kind.eventbrite_ticket_id) %>
-</p>
-<% else %>
-  no
-<% end %>
+  <%= @event.name_for_ticket(@ticket_kind.eventbrite_ticket_id) %>
 </p>
 
 <p>

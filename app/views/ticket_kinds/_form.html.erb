@@ -16,14 +16,25 @@
     <%= f.check_box :is_access_code, onclick: "$('#access').toggle()" %>
     <%= f.label :is_access_code, "Access code?" %><br />
     <span class="label_note">
-      Use an Access code to reveal a hidden free ticket (select below).<br>
-      Otherwise it will be a Discount code: a more generic code that makes the Regular ticket free.
+      Use an Access Code to reveal a hidden free ticket.<br>
+      Use a Discount Code to give a 100% discount on a paid ticket.
     </span>
   </p>
 
   <div id="access" class="callout" style="<%= 'display:none' unless @ticket_kind.is_access_code %>" >
     Eventbrite ticket to give access to:
-    <% @eventbrite_tickets.each do |eticket| %>
+    <% @eventbrite_free_hidden_tickets.each do |eticket| %>
+      <br/>
+      <%= f.radio_button :eventbrite_ticket_id, eticket['id'] %>
+      <label for="eventbrite_ticket_id_<%= eticket['id'] %>">
+        <%= eticket['name'] %>
+      </label>
+    <% end %>
+  </div>
+
+  <div id="discount" class="callout" style="<%= 'display:none' if @ticket_kind.is_access_code %>" >
+    Eventbrite ticket to create discount for:
+    <% @eventbrite_paid_tickets.each do |eticket| %>
       <br/>
       <%= f.radio_button :eventbrite_ticket_id, eticket['id'] %>
       <label for="eventbrite_ticket_id_<%= eticket['id'] %>">

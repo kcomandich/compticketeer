@@ -1,5 +1,5 @@
 class TicketKindsController < ApplicationController
-  before_filter :assign_event_or_redirect, only: [:new, :edit, :show]
+  before_filter :assign_event_or_redirect, only: [:index, :new, :edit, :show]
   before_filter :assign_tickets_or_redirect, only: [:new, :edit, :show]
 
   # GET /ticket_kinds

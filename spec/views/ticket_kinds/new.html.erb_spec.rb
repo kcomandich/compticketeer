@@ -10,7 +10,8 @@ describe "/ticket_kinds/new.html.erb" do
       subject: "value for subject",
       template: "value for template"
     ))
-    assign(:eventbrite_tickets, @eventbrite_tickets = [])
+    assign(:eventbrite_paid_tickets, @eventbrite_paid_tickets = [])
+    assign(:eventbrite_free_hidden_tickets, @eventbrite_free_hidden_tickets = [])
   end
 
   it "renders new ticket_kind form" do

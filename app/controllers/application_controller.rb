@@ -67,8 +67,9 @@ class ApplicationController < ActionController::Base
   end
 
   def assign_tickets_or_redirect
-    @eventbrite_tickets = @event.eventbrite_free_hidden_tickets
-    unless @eventbrite_tickets
+    @eventbrite_free_hidden_tickets = @event.eventbrite_free_hidden_tickets
+    @eventbrite_paid_tickets = @event.eventbrite_paid_tickets
+    unless @eventbrite_free_hidden_tickets && @eventbrite_paid_tickets
       redirect_to config_url
     end
   end

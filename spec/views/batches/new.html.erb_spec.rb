@@ -7,6 +7,7 @@ describe "/batches/new.html.erb" do
     assign(:batch, build(:batch, ticket_kind: nil))
     assign(:access_ticket_kinds, [build_stubbed(:ticket_kind)])
     assign(:discount_ticket_kinds, [build_stubbed(:ticket_kind)])
+    assign(:event, @event = Event.new)
   end
 
   it "renders new batch form" do
