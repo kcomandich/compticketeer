@@ -22,6 +22,15 @@ class ApplicationController < ActionController::Base
   end
   helper_method :current_user
 
+  def store_location
+    session[:return_to] = request.fullpath
+  end
+
+  def redirect_back_or_default(default)
+    redirect_to(session[:return_to] || default)
+    session[:return_to] = nil
+  end
+
   #==[ Filters ]================================================================
 
   def require_user
@@ -40,15 +49,6 @@ class ApplicationController < ActionController::Base
       redirect_to root_url
       return false
     end
-  end
-
-  def store_location
-    session[:return_to] = request.fullpath
-  end
-
-  def redirect_back_or_default(default)
-    redirect_to(session[:return_to] || default)
-    session[:return_to] = nil
   end
 
   # Set @event variable
