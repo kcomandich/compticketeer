@@ -11,10 +11,13 @@ class Event < ActiveRecord::Base
 
   def name_for_ticket(eventbrite_ticket_id)
     return '' unless eventbrite_ticket_id
-    eventbrite_tickets.each do |ticket|
-      return ticket.name if eventbrite_ticket_id == ticket.id
+
+    ticket = eventbrite_tickets.find{ |t| t['id'].to_i == eventbrite_ticket_id }
+    if ticket
+      return ticket['name']
+    else
+      return "[Error: current event doesn't contain this ticket. Assign new ticket.]"
     end
-    return "[Error: current event doesn't contain this ticket. Assign new ticket.]"
   end
 
   def eventbrite_free_hidden_tickets
