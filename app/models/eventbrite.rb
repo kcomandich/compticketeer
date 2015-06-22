@@ -6,6 +6,11 @@ class Eventbrite
     content_type: :json
   }
 
+  def self.get_event_ticket_classes
+    return unless @event
+    status, @event.error = eventbrite_request(RestClient.method(:get), method(:parse_event_get_ticket_classes), "#{@url}/events/#{@eventbrite_event_id}/ticket_classes")
+  end
+
   def self.get_event_details
     @event = Event.find_or_create_by(eventbrite_event_id: @eventbrite_event_id)
     unless Rails.application.config.eventbrite[:oauth_token]
@@ -15,6 +20,7 @@ class Eventbrite
 
     status, @event.error = eventbrite_request(RestClient.method(:get), method(:parse_event_get_response), "#{@url}/events/#{@eventbrite_event_id}")
     @event.update_attribute :title, @event.data['name']['text'] if status
+    get_event_ticket_classes
     return @event
   end
 
@@ -92,6 +98,20 @@ class Eventbrite
     else
       # Registration succeeded
       return true, "Registered Eventbrite code"
+    end
+  end
+
+  def self.parse_event_get_ticket_classes(res)
+    begin
+      answer = JSON.parse(res.body)
+    rescue JSON::ParserError => e
+      return false, "Could not parse Eventbrite JSON response: #{res.body}"
+    end
+    if answer['error']
+      return false, "Could not get Eventbrite event: #{res.body}"
+    else
+      @event.update_attribute :eventbrite_tickets, answer['ticket_classes']
+      return true
     end
   end
 end

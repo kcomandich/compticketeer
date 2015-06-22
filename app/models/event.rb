@@ -1,13 +1,9 @@
 class Event < ActiveRecord::Base
   attr_accessor :error
   attr_accessor :data
-  has_many :tickets
-
   # tickets for the current event
-  def eventbrite_tickets
-    return [] unless @data
-    @data['ticket_classes']
-  end
+  attr_accessor :eventbrite_tickets
+  has_many :tickets
 
   def name_for_ticket(eventbrite_ticket_id)
     return '' unless eventbrite_ticket_id
