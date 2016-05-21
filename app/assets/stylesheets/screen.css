@@ -79,3 +79,14 @@ table td {
 #access {
   width : 300px;
 }
+#batch_emails {
+  width : 300px;
+  height : 100px;
+}
+#ticket_kind_subject {
+  width : 300px;
+}
+#ticket_kind_template {
+  width : 400px;
+  height : 200px;
+}
